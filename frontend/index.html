@@ -64,11 +64,50 @@
     .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
     .custom-scroll::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
     #map { height: 530px; z-index: 10; border-radius: 1rem; }
-    .footer-panoramic {
+    .site-footer {
+      position: relative;
+      isolation: isolate;
       background-image: url('/mangalagiri_footer.png');
       background-size: cover;
       background-position: center bottom;
       background-repeat: no-repeat;
+      color: #ffffff;
+    }
+    .site-footer::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        180deg,
+        rgba(8, 22, 28, 0.88) 0%,
+        rgba(10, 26, 34, 0.75) 45%,
+        rgba(6, 18, 24, 0.86) 80%,
+        rgba(4, 14, 18, 0.94) 100%
+      );
+      z-index: 1;
+      pointer-events: none;
+    }
+    .footer-content {
+      position: relative;
+      z-index: 2;
+    }
+    .footer-card {
+      background: rgba(12, 28, 36, 0.62);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 1rem;
+      padding: 1.25rem;
+      box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.35);
+      transition: all 0.25s ease;
+    }
+    .footer-card:hover {
+      background: rgba(12, 28, 36, 0.78);
+      border-color: rgba(45, 212, 191, 0.35);
+      transform: translateY(-2px);
+    }
+    .text-glow {
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
     }
   </style>
 </head>
@@ -1135,97 +1174,109 @@
   </section>
 
   <!-- =========================================================================
-       11. CUSTOM FOOTER WITH SUPPLIED MANGALAGIRI PANORAMIC ARTWORK
+       11. REDESIGNED CIVIC FOOTER WITH FULL-FRAME MANGALAGIRI BACKGROUND
        ========================================================================= -->
-  <footer class="mt-auto border-t border-slate-300 bg-white relative">
-    
-    <!-- Visual Image Foundation: Supplied Mangalagiri Panoramic Sketch Artwork -->
-    <div class="relative w-full overflow-hidden bg-slate-100 border-b border-slate-200">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <div class="relative rounded-2xl overflow-hidden shadow-md border border-slate-200">
-          <img src="/mangalagiri_footer.png" alt="Our Mangalagiri, Our Pride, Our Duty! Panoramic sketch of Sri Panakala Lakshmi Narasimha Swamy Temple, Weavers Monument, Mangalagiri Railway Station, ACA Stadium, AIIMS Mangalagiri, and TTD Amaravati" class="w-full h-auto object-cover max-h-72">
-          
-          <!-- Subtle Gradient Overlay for layered text contrast -->
-          <div class="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/40 to-transparent flex flex-col justify-end p-6 sm:p-8 text-white">
-            <div class="max-w-2xl">
-              <span class="text-xs font-bold uppercase tracking-widest text-amber-300">Together, Let's Build a Better Mangalagiri</span>
-              <p class="text-xs sm:text-sm text-slate-200 mt-1 leading-relaxed">
-                "Your participation helps us identify local civic problems and work towards a cleaner, safer community."
-              </p>
-            </div>
-          </div>
+  <footer class="site-footer mt-auto border-t border-teal-900/60 text-white relative">
+    <div class="footer-content max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-8">
+      
+      <!-- Top Civic Slogan & Intro Banner (Layered over artwork) -->
+      <div class="text-center max-w-2xl mx-auto mb-10">
+        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300 text-xs font-bold uppercase tracking-widest text-glow mb-2">
+          <i class="fa-solid fa-gopuram text-amber-400"></i>
+          <span>"Our Mangalagiri, Our Pride, Our Duty!"</span>
         </div>
+        <h3 class="text-2xl sm:text-3xl font-black text-white text-glow tracking-tight mt-1">Together, Let's Build a Better Mangalagiri.</h3>
+        <p class="text-xs sm:text-sm text-slate-200 text-glow mt-1 leading-relaxed">
+          "Your participation helps us identify local civic problems and work towards a cleaner, safer community."
+        </p>
       </div>
-    </div>
 
-    <!-- Contact & Meta Information Layer -->
-    <div class="bg-slate-900 text-slate-300 py-10 border-t border-slate-800">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-8 text-xs">
-          
-          <!-- Platform Identity -->
-          <div class="space-y-2">
-            <div class="flex items-center gap-2">
-              <span class="text-lg font-black text-white">Nagar<span class="text-teal-400">Mithra</span></span>
+      <!-- 4 Organized Content Columns (Semi-transparent Glass Cards over the illustration) -->
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+        
+        <!-- Column 1: NagarMithra Branding -->
+        <div class="footer-card space-y-3">
+          <div class="flex items-center gap-2.5">
+            <div class="w-9 h-9 rounded-lg bg-gradient-to-tr from-teal-500 to-amber-500 flex items-center justify-center text-white shadow">
+              <i class="fa-solid fa-gopuram text-base"></i>
             </div>
-            <p class="text-slate-400 leading-relaxed">
-              Mangalagiri Civic Issue Reporting Platform. Built exclusively for Mangalagiri, Andhra Pradesh, India.
-            </p>
-            <div class="text-[11px] text-amber-300 font-semibold pt-1">
-              "Our Mangalagiri, Our Pride, Our Duty!"
-            </div>
-          </div>
-
-          <!-- Official Contact Channels -->
-          <div class="space-y-2">
-            <div class="font-bold uppercase tracking-wider text-white">Contact & Support</div>
             <div>
-              <span class="text-slate-500 block">Civic Support Email:</span>
-              <a href="mailto:support.mangalagiri@nagarmithra.org" class="text-teal-400 hover:underline font-mono">support.mangalagiri@nagarmithra.org</a>
-            </div>
-            <div class="pt-1">
-              <span class="text-slate-500 block">Citizen Helpdesk:</span>
-              <a href="tel:08645230000" class="text-amber-300 hover:underline font-mono font-bold">08645-230000</a>
+              <span class="text-xl font-black text-white tracking-tight">Nagar<span class="text-teal-400">Mithra</span></span>
             </div>
           </div>
-
-          <!-- Coverage Zone -->
-          <div class="space-y-2">
-            <div class="font-bold uppercase tracking-wider text-white">Service Boundaries</div>
-            <p class="text-slate-400 leading-relaxed">
-              Serving: Kothapet, Panakala Temple Hill, Weavers Colony, AIIMS Campus, ACA Stadium, Chinakakani, Navuluru, Atmakur & Yerrabalem.
-            </p>
-            <p class="text-[11px] text-rose-300">
-              * Reports outside Mangalagiri are automatically blocked.
-            </p>
+          <p class="text-xs text-slate-200 leading-relaxed text-glow">
+            Mangalagiri Civic Issue Reporting Platform. Built exclusively for Mangalagiri, Andhra Pradesh, India.
+          </p>
+          <div class="pt-1">
+            <span class="inline-block px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-md bg-teal-500/20 text-teal-300 border border-teal-500/30">
+              Serving Mangalagiri, AP
+            </span>
           </div>
-
-          <!-- Emergency & Legal -->
-          <div class="space-y-2">
-            <div class="font-bold uppercase tracking-wider text-white">Municipal Emergency</div>
-            <p class="text-slate-400">Police / Fire / DRF Emergency: <span class="text-rose-400 font-bold font-mono">100 / 101</span></p>
-            <p class="text-slate-400">AP Power Discom: <span class="text-amber-300 font-bold font-mono">1912</span></p>
-            <div class="pt-2 text-[11px] text-slate-500">
-              Academic Project &copy; 2026 • CSE AI Urban Civic-Tech Submission
-            </div>
-          </div>
-
         </div>
 
-        <div class="pt-6 border-t border-slate-800 text-[11px] text-slate-500 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <div>
-            Mangalagiri Civic Issue Reporting Platform • All Rights Reserved &copy; 2026
+        <!-- Column 2: Contact & Support -->
+        <div class="footer-card space-y-3">
+          <div class="text-xs font-bold uppercase tracking-wider text-amber-300 text-glow flex items-center gap-1.5">
+            <i class="fa-solid fa-headset text-amber-400"></i> Contact & Support
           </div>
-          <div class="flex items-center gap-4">
-            <a href="#hero" class="hover:text-slate-300">Back to Top</a>
-            <span>•</span>
-            <a href="#report" class="hover:text-slate-300">Report Hazard</a>
-            <span>•</span>
-            <a href="#track" class="hover:text-slate-300">Track Issue</a>
+          <div class="text-xs space-y-1">
+            <span class="text-slate-300 block font-medium">Civic Support Email:</span>
+            <a href="mailto:support.mangalagiri@nagarmithra.org" class="text-teal-300 hover:text-white underline font-mono text-[11px] block break-all transition-colors">
+              support.mangalagiri@nagarmithra.org
+            </a>
+          </div>
+          <div class="text-xs space-y-1 pt-1">
+            <span class="text-slate-300 block font-medium">Citizen Helpdesk:</span>
+            <a href="tel:08645230000" class="text-amber-300 hover:text-white font-mono font-bold text-sm block transition-colors">
+              08645-230000
+            </a>
+            <span class="text-[10px] text-slate-300 block">MTMC Civic Helpdesk</span>
+          </div>
+        </div>
+
+        <!-- Column 3: Service Boundaries -->
+        <div class="footer-card space-y-3">
+          <div class="text-xs font-bold uppercase tracking-wider text-teal-300 text-glow flex items-center gap-1.5">
+            <i class="fa-solid fa-map-location-dot text-teal-400"></i> Service Boundaries
+          </div>
+          <p class="text-xs text-slate-200 leading-relaxed text-glow">
+            Serving: Kothapet, Panakala Temple Hill, Weavers Colony, AIIMS Campus, ACA Stadium, Chinakakani, Navuluru, Atmakur & Yerrabalem.
+          </p>
+          <p class="text-[11px] text-rose-300 font-semibold text-glow">
+            * Reports outside Mangalagiri are automatically blocked.
+          </p>
+        </div>
+
+        <!-- Column 4: Municipal Emergency -->
+        <div class="footer-card space-y-3">
+          <div class="text-xs font-bold uppercase tracking-wider text-rose-300 text-glow flex items-center gap-1.5">
+            <i class="fa-solid fa-triangle-exclamation text-rose-400"></i> Municipal Emergency
+          </div>
+          <div class="text-xs text-slate-200 space-y-1 text-glow">
+            <div>Police / Fire / DRF Emergency: <span class="text-rose-400 font-bold font-mono">100 / 101</span></div>
+            <div>AP Power Discom: <span class="text-amber-300 font-bold font-mono">1912</span></div>
+          </div>
+          <div class="pt-2 text-[10px] text-slate-300 border-t border-white/10 text-glow">
+            Academic Project &copy; 2026 • CSE AI Urban Civic-Tech Submission
           </div>
         </div>
 
       </div>
+
+      <!-- Bottom Copyright & Navigation Row (Over the same background image) -->
+      <div class="pt-6 border-t border-white/20 text-xs text-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4 text-glow">
+        <div class="text-center sm:text-left">
+          Mangalagiri Civic Issue Reporting Platform • All Rights Reserved &copy; 2026
+        </div>
+        <div class="flex items-center gap-4 text-xs font-semibold">
+          <a href="#hero" class="text-slate-200 hover:text-teal-300 transition-colors">Back to Top</a>
+          <span class="text-slate-400">•</span>
+          <a href="#report" class="text-slate-200 hover:text-teal-300 transition-colors">Report Hazard</a>
+          <span class="text-slate-400">•</span>
+          <a href="#track" class="text-slate-200 hover:text-teal-300 transition-colors">Track Issue</a>
+        </div>
+      </div>
+
     </div>
   </footer>
 
