@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block title %}Report an Issue — NagarMitra{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-header">
+    <h1>Report a Civic Issue</h1>
+    <p>Help improve your city by reporting infrastructure problems. Fill out the form below and we'll generate a reference number for you to track your complaint.</p>
+  </div>
+
+  <form method="POST" enctype="multipart/form-data" class="complaint-form">
+    {{ form.hidden_tag() }}
+
+    <div class="form-group">
+      {{ form.citizen_name.label(class='form-label') }}
+      {{ form.citizen_name(class='form-control', placeholder='Enter your full name') }}
+      {% for error in form.citizen_name.errors %}
+        <span class="form-error">{{ error }}</span>
+      {% endfor %}
+    </div>
+
+    <div class="form-group">
+      {{ form.citizen_contact.label(class='form-label') }}
+      {{ form.citizen_contact(class='form-control', placeholder='Phone number or email address') }}
+      {% for error in form.citizen_contact.errors %}
+        <span class="form-error">{{ error }}</span>
+      {% endfor %}
+    </div>
+
+    <div class="form-group">
+      {{ form.title.label(class='form-label') }}
+      {{ form.title(class='form-control', placeholder='Brief summary of the issue') }}
+      {% for error in form.title.errors %}
+        <span class="form-error">{{ error }}</span>
+      {% endfor %}
+    </div>
+
+    <div class="form-group">
+      {{ form.description.label(class='form-label') }}
+      {{ form.description(class='form-control', rows='5', placeholder='Describe the problem in detail — what, where, how long, impact...') }}
+      {% for error in form.description.errors %}
+        <span class="form-error">{{ error }}</span>
+      {% endfor %}
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        {{ form.category.label(class='form-label') }}
+        {{ form.category(class='form-control') }}
+        {% for error in form.category.errors %}
+          <span class="form-error">{{ error }}</span>
+        {% endfor %}
+      </div>
+
+      <div class="form-group">
+        {{ form.priority.label(class='form-label') }}
+        {{ form.priority(class='form-control') }}
+        {% for error in form.priority.errors %}
+          <span class="form-error">{{ error }}</span>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="form-group">
+      {{ form.location.label(class='form-label') }}
+      {{ form.location(class='form-control', placeholder='Street address, landmark, or area description') }}
+      {% for error in form.location.errors %}
+        <span class="form-error">{{ error }}</span>
+      {% endfor %}
+    </div>
+
+    <div class="form-group">
+      {{ form.image.label(class='form-label') }}
+      {{ form.image(class='form-control') }}
+      <small style="color: var(--color-text-light);">Accepted: PNG, JPG, JPEG, GIF, WebP. Max size: 5 MB.</small>
+      {% for error in form.image.errors %}
+        <span class="form-error">{{ error }}</span>
+      {% endfor %}
+    </div>
+
+    {{ form.submit(class='btn btn-primary btn-block') }}
+  </form>
+</div>
+{% endblock %}

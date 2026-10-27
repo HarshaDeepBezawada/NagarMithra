@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard — NagarMitra Admin{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="dashboard">
+    <h1>Admin Dashboard</h1>
+
+    <!-- Statistics Cards -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <span class="stat-number">{{ stats.total }}</span>
+        <span class="stat-label">Total</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-number">{{ stats.submitted }}</span>
+        <span class="stat-label">Submitted</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-number">{{ stats.acknowledged }}</span>
+        <span class="stat-label">Acknowledged</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-number">{{ stats.in_progress }}</span>
+        <span class="stat-label">In Progress</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-number">{{ stats.resolved }}</span>
+        <span class="stat-label">Resolved</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-number">{{ stats.rejected }}</span>
+        <span class="stat-label">Rejected</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-number">{{ stats.high_priority }}</span>
+        <span class="stat-label">High Priority</span>
+      </div>
+    </div>
+
+    <!-- Filters and Controls -->
+    <div class="dashboard-controls">
+      <form method="GET" action="{{ url_for('admin.dashboard') }}" class="filter-form">
+        <input type="text" name="q" value="{{ search_q }}" placeholder="Search by reference or title..." class="form-control">
+        <select name="status" class="form-control">
+          <option value="">All Statuses</option>
+          {% for val, label in statuses %}
+            <option value="{{ val }}" {% if status_filter == val %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+        <select name="category" class="form-control">
+          <option value="">All Categories</option>
+          {% for val, label in categories %}
+            <option value="{{ val }}" {% if category_filter == val %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+        <select name="priority" class="form-control">
+          <option value="">All Priorities</option>
+          {% for val, label in priorities %}
+            <option value="{{ val }}" {% if priority_filter == val %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+        <button type="submit" class="btn btn-primary btn-sm">Filter</button>
+        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline btn-sm">Clear</a>
+      </form>
+      <a href="{{ url_for('admin.export_csv') }}" class="btn btn-outline btn-sm">📥 Export CSV</a>
+    </div>
+
+    <!-- Complaints Table -->
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Reference</th>
+          <th>Title</th>
+          <th>Category</th>
+          <th>Priority</th>
+          <th>Status</th>
+          <th>Date</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in complaints %}
+        <tr>
+          <td><strong>{{ c.reference }}</strong></td>
+          <td>{{ c.title[:50] }}{% if c.title|length > 50 %}...{% endif %}</td>
+          <td>{{ c.category|replace('_', ' ')|title }}</td>
+          <td><span class="badge badge-{{ c.priority }}">{{ c.priority|title }}</span></td>
+          <td><span class="badge badge-{{ c.status }}">{{ c.status|replace('_', ' ')|title }}</span></td>
+          <td>{{ c.created_at.strftime('%d %b %Y') }}</td>
+          <td><a href="{{ url_for('admin.complaint_detail', complaint_id=c.id) }}" class="btn btn-primary btn-sm">View</a></td>
+        </tr>
+        {% endfor %}
+        {% if not complaints %}
+        <tr class="empty-row">
+          <td colspan="7">No complaints found.</td>
+        </tr>
+        {% endif %}
+      </tbody>
+    </table>
+
+    <!-- Pagination -->
+    {% if pagination.pages > 1 %}
+    <div class="pagination">
+      {% if pagination.has_prev %}
+        <a href="{{ url_for('admin.dashboard', page=pagination.prev_num, q=search_q, status=status_filter, category=category_filter, priority=priority_filter) }}">← Previous</a>
+      {% endif %}
+      <span>Page {{ pagination.page }} of {{ pagination.pages }}</span>
+      {% if pagination.has_next %}
+        <a href="{{ url_for('admin.dashboard', page=pagination.next_num, q=search_q, status=status_filter, category=category_filter, priority=priority_filter) }}">Next →</a>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

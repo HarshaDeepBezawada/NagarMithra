@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}NagarMitra{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+  <header>
+    <nav class="navbar">
+      <div class="container nav-container">
+        <a href="{{ url_for('main.index') }}" class="nav-brand">NagarMitra</a>
+        <button class="nav-toggle" aria-label="Toggle navigation">☰</button>
+        <div class="nav-links">
+          <a href="{{ url_for('main.index') }}" class="nav-link">Home</a>
+          <a href="{{ url_for('complaints.report') }}" class="nav-link">Report Issue</a>
+          <a href="{{ url_for('complaints.track') }}" class="nav-link">Track Complaint</a>
+          {% if session.get('admin_id') %}
+            <a href="{{ url_for('admin.dashboard') }}" class="nav-link">Dashboard</a>
+            <a href="{{ url_for('auth.logout') }}" class="nav-link">Logout</a>
+          {% else %}
+            <a href="{{ url_for('auth.login') }}" class="nav-link">Admin Login</a>
+          {% endif %}
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="container">
+        <div class="flash-messages">
+          {% for category, message in messages %}
+            <div class="flash-message flash-{{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <main class="main-content">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>NagarMitra — Civic Complaint Management System</p>
+      <p>Academic Project &copy; 2026</p>
+    </div>
+  </footer>
+
+  <script>
+    document.querySelector('.nav-toggle').addEventListener('click', () => document.querySelector('.nav-links').classList.toggle('active'));
+  </script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

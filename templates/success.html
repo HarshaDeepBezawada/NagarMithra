@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}Complaint Submitted — NagarMitra{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="success-page">
+    <div class="success-icon">✅</div>
+    <h1>Complaint Submitted Successfully!</h1>
+
+    <div class="reference-card">
+      <p>Your Reference Number</p>
+      <h2 class="reference-number">{{ complaint.reference }}</h2>
+      <p>Please save this number to track your complaint status.</p>
+    </div>
+
+    <div class="success-actions">
+      <a href="{{ url_for('complaints.track') }}" class="btn btn-primary">Track Your Complaint</a>
+      <a href="{{ url_for('complaints.report') }}" class="btn btn-secondary">Submit Another</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

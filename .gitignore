@@ -1,0 +1,46 @@
+# NagarMitra .gitignore
+# =====================
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg
+*.egg-info/
+dist/
+build/
+
+# Virtual environment
+venv/
+env/
+.venv/
+
+# Environment secrets
+.env
+
+# Database
+*.db
+
+# Uploads
+uploads/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Testing
+.pytest_cache/
+htmlcov/
+.coverage
+
+# Distribution
+*.whl
+*.tar.gz

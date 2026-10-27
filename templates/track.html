@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block title %}Track Complaint — NagarMitra{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-header">
+    <h1>Track Your Complaint</h1>
+    <p>Enter your complaint reference number to check the current status.</p>
+  </div>
+
+  <form method="POST" class="tracking-form">
+    {{ form.hidden_tag() }}
+    <div class="form-group">
+      {{ form.reference.label(class='form-label') }}
+      <div class="search-group">
+        {{ form.reference(class='form-control', placeholder='e.g., NM-A1B2C3D4') }}
+        {{ form.submit(class='btn btn-primary') }}
+      </div>
+      {% for error in form.reference.errors %}
+        <span class="form-error">{{ error }}</span>
+      {% endfor %}
+    </div>
+  </form>
+
+  {% if complaint %}
+  <div class="complaint-result">
+    <h2>Complaint Details</h2>
+    <div class="detail-grid">
+      <div class="detail-row">
+        <div class="detail-label">Reference</div>
+        <div class="detail-value">{{ complaint.reference }}</div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-label">Title</div>
+        <div class="detail-value">{{ complaint.title }}</div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-label">Category</div>
+        <div class="detail-value">{{ complaint.category|replace('_', ' ')|title }}</div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-label">Location</div>
+        <div class="detail-value">{{ complaint.location }}</div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-label">Priority</div>
+        <div class="detail-value">
+          <span class="badge badge-{{ complaint.priority }}">{{ complaint.priority|title }}</span>
+        </div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-label">Status</div>
+        <div class="detail-value">
+          <span class="badge badge-{{ complaint.status }}">{{ complaint.status|replace('_', ' ')|title }}</span>
+        </div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-label">Submitted</div>
+        <div class="detail-value">{{ complaint.created_at.strftime('%d %B %Y, %I:%M %p') }}</div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-label">Last Updated</div>
+        <div class="detail-value">{{ complaint.updated_at.strftime('%d %B %Y, %I:%M %p') }}</div>
+      </div>
+      {% if complaint.resolved_at %}
+      <div class="detail-row">
+        <div class="detail-label">Resolved</div>
+        <div class="detail-value">{{ complaint.resolved_at.strftime('%d %B %Y, %I:%M %p') }}</div>
+      </div>
+      {% endif %}
+      {% if complaint.admin_notes and complaint.status in ['resolved', 'rejected'] %}
+      <div class="detail-row">
+        <div class="detail-label">Resolution Notes</div>
+        <div class="detail-value">{{ complaint.admin_notes }}</div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
