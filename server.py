@@ -5,6 +5,7 @@ Zero-dependency Python standard library server (http.server.HTTPServer)
 serving the Mangalagiri Civic Web Portal on Port 5000.
 
 Features:
+- Mandatory geotagged photo verification (EXIF GPS parsing)
 - Strict Mangalagiri geographic boundary enforcement
 - Haversine spatial duplicate detection (<100m)
 - Dynamic priority scoring (0-100)
@@ -23,6 +24,7 @@ import mimetypes
 import uuid
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
+from PIL import Image, ExifTags
 
 # Ensure UTF-8 output on Windows consoles
 if hasattr(sys.stdout, 'reconfigure'):
@@ -63,10 +65,57 @@ os.makedirs(FRONTEND_DIR, exist_ok=True)
 ADMIN_PASSCODE = "admin123"
 
 
+def _convert_dms_to_degrees(dms_value) -> float:
+    """Helper to convert EXIF Degree-Minute-Second tuples to decimal degrees."""
+    try:
+        d = float(dms_value[0])
+        m = float(dms_value[1])
+        s = float(dms_value[2])
+        return d + (m / 60.0) + (s / 3600.0)
+    except Exception:
+        return 0.0
+
+
+def extract_exif_gps_from_bytes(image_bytes: bytes) -> tuple[float | None, float | None]:
+    """
+    Extract GPS Latitude & Longitude from image EXIF metadata.
+    Returns (lat, lon) in decimal degrees if found, else (None, None).
+    """
+    try:
+        img = Image.open(io.BytesIO(image_bytes))
+        exif_raw = img._getexif()
+        if not exif_raw:
+            return None, None
+
+        gps_info = {}
+        for tag, val in exif_raw.items():
+            tag_name = ExifTags.TAGS.get(tag, tag)
+            if tag_name == "GPSInfo":
+                for sub_tag in val:
+                    sub_name = ExifTags.GPSTAGS.get(sub_tag, sub_tag)
+                    gps_info[sub_name] = val[sub_tag]
+
+        if "GPSLatitude" in gps_info and "GPSLongitude" in gps_info:
+            lat = _convert_dms_to_degrees(gps_info["GPSLatitude"])
+            lon = _convert_dms_to_degrees(gps_info["GPSLongitude"])
+            lat_ref = gps_info.get("GPSLatitudeRef", "N")
+            lon_ref = gps_info.get("GPSLongitudeRef", "E")
+
+            if lat_ref != "N":
+                lat = -lat
+            if lon_ref != "E":
+                lon = -lon
+
+            return round(lat, 6), round(lon, 6)
+    except Exception:
+        pass
+    return None, None
+
+
 class NagarMithraRequestHandler(BaseHTTPRequestHandler):
     """Custom HTTP Request Handler for the Mangalagiri Civic Portal."""
 
-    server_version = "MangalagiriCivicPortal/2.0"
+    server_version = "MangalagiriCivicPortal/2.1"
 
     def _send_json(self, status_code: int, data: dict | list):
         """Send a JSON HTTP response with UTF-8 encoding and CORS headers."""
@@ -237,23 +286,49 @@ class NagarMithraRequestHandler(BaseHTTPRequestHandler):
             })
             return
 
-        # 2. POST /api/report (Complaint submission with Mangalagiri boundary + Haversine check)
+        # 2. POST /api/report (Complaint submission with MANDATORY Geotagged Photo + Mangalagiri check)
         if path == "/api/report":
             category = body.get("category", "").strip()
             title = body.get("title", "").strip()
             description = body.get("description", "").strip()
             severity = int(body.get("severity", 3))
             area = body.get("area", "Panakala Temple Area").strip()
-            
+            photo_data = body.get("photo_data", "")
+
+            # MANDATORY REQUIREMENT: Geotagged photo input is NOT optional
+            if not photo_data or "base64," not in photo_data:
+                self._send_json(400, {
+                    "error": "Geotagged Photo Required",
+                    "message": "Uploading a photo is mandatory. Only geotagged images are accepted."
+                })
+                return
+
+            # Extract image raw bytes from base64
             try:
-                lat = float(body.get("latitude"))
-                lon = float(body.get("longitude"))
+                header, encoded = photo_data.split("base64,", 1)
+                img_bytes = base64.b64decode(encoded)
+            except Exception:
+                self._send_json(400, {
+                    "error": "Invalid Photo Format",
+                    "message": "The uploaded photo data could not be processed. Please upload a valid image."
+                })
+                return
+
+            # Check EXIF GPS metadata from uploaded photo
+            exif_lat, exif_lon = extract_exif_gps_from_bytes(img_bytes)
+
+            try:
+                # If EXIF GPS coordinates exist, use them as authoritative
+                if exif_lat is not None and exif_lon is not None:
+                    lat = float(exif_lat)
+                    lon = float(exif_lon)
+                else:
+                    # Use client-tagged coordinates from device location
+                    lat = float(body.get("latitude"))
+                    lon = float(body.get("longitude"))
             except (TypeError, ValueError):
                 self._send_json(400, {"error": "Invalid GPS coordinates."})
                 return
-
-            photo_data = body.get("photo_data", "")
-            photo_name = body.get("photo_name", "")
 
             if not category or not title:
                 self._send_json(400, {"error": "Category and Title are required"})
@@ -270,6 +345,22 @@ class NagarMithraRequestHandler(BaseHTTPRequestHandler):
                 })
                 return
 
+            # Save uploaded photo to uploads directory
+            saved_photo_path = ""
+            try:
+                ext = "jpg"
+                if "png" in header:
+                    ext = "png"
+                elif "webp" in header:
+                    ext = "webp"
+                img_filename = f"{generate_ticket_id().lower()}_{uuid.uuid4().hex[:6]}.{ext}"
+                full_path = os.path.join(UPLOAD_DIR, img_filename)
+                with open(full_path, "wb") as img_file:
+                    img_file.write(img_bytes)
+                saved_photo_path = f"/uploads/{img_filename}"
+            except Exception as ex:
+                print(f"Error saving image: {ex}")
+
             # Spatial Duplicate Check (<100m threshold, same category, not resolved)
             duplicate_candidate, distance = find_duplicate_candidate(category, lat, lon, threshold_m=100.0)
 
@@ -284,24 +375,6 @@ class NagarMithraRequestHandler(BaseHTTPRequestHandler):
                     "ticket": updated_ticket
                 })
                 return
-
-            # Save photo if base64 provided
-            saved_photo_path = ""
-            if photo_data and "base64," in photo_data:
-                try:
-                    header, encoded = photo_data.split("base64,", 1)
-                    ext = "jpg"
-                    if "png" in header:
-                        ext = "png"
-                    elif "webp" in header:
-                        ext = "webp"
-                    img_filename = f"{generate_ticket_id().lower()}_{uuid.uuid4().hex[:6]}.{ext}"
-                    full_path = os.path.join(UPLOAD_DIR, img_filename)
-                    with open(full_path, "wb") as img_file:
-                        img_file.write(base64.b64decode(encoded))
-                    saved_photo_path = f"/uploads/{img_filename}"
-                except Exception as ex:
-                    print(f"Error saving image: {ex}")
 
             # Create new master ticket
             new_ticket_id = generate_ticket_id()
