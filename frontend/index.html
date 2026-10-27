@@ -1,0 +1,1662 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NagarMithra — Civic Web Portal | GHMC Hyderabad</title>
+  
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- FontAwesome 6 Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Leaflet.js (OpenStreetMap) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+          },
+          colors: {
+            civic: {
+              navy: '#0f172a',
+              blue: '#1e3a8a',
+              teal: '#0f766e',
+              emerald: '#10b981',
+              amber: '#f59e0b',
+              crimson: '#ef4444',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .glass-nav {
+      background: rgba(15, 23, 42, 0.88);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+    .hero-gradient {
+      background: radial-gradient(circle at 20% 30%, rgba(30, 58, 138, 0.5) 0%, transparent 50%),
+                  radial-gradient(circle at 80% 70%, rgba(15, 118, 110, 0.4) 0%, transparent 50%),
+                  linear-gradient(135deg, #0b1120 0%, #0f172a 50%, #111827 100%);
+    }
+    .custom-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
+    .custom-scroll::-webkit-scrollbar-track { background: #f1f5f9; }
+    .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    .custom-scroll::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    #map { height: 520px; z-index: 10; }
+    @keyframes pulse-slow {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.85; transform: scale(1.05); }
+    }
+    .live-pulse { animation: pulse-slow 2.5s infinite; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col">
+
+  <!-- =========================================================================
+       4.1 STICKY NAVIGATION BAR
+       ========================================================================= -->
+  <header class="sticky top-0 z-50 glass-nav border-b border-slate-800/80 shadow-lg">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-20">
+        
+        <!-- Brand Logo -->
+        <a href="#hero" class="flex items-center gap-3 group">
+          <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-teal-500 to-blue-600 flex items-center justify-center text-white shadow-md shadow-teal-500/20 group-hover:scale-105 transition-transform">
+            <i class="fa-solid fa-landmark text-xl"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-2xl font-black text-white tracking-tight">Nagar<span class="text-teal-400">Mithra</span></span>
+              <span class="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-1.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+                GHMC Live
+              </span>
+            </div>
+            <p class="text-xs text-slate-400 tracking-wide font-medium">Urban Civic Portal • Hyderabad</p>
+          </div>
+        </a>
+
+        <!-- Desktop Navigation -->
+        <nav class="hidden lg:flex items-center gap-1 xl:gap-2">
+          <a href="#hero" class="px-3 py-2 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 rounded-lg transition-colors">Home</a>
+          <a href="#report" class="px-3 py-2 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 rounded-lg transition-colors">Report Hazard</a>
+          <a href="#track" class="px-3 py-2 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 rounded-lg transition-colors">Track Ticket</a>
+          <a href="#map-section" class="px-3 py-2 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 rounded-lg transition-colors">Live Map</a>
+          <a href="#analytics" class="px-3 py-2 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 rounded-lg transition-colors">Analytics</a>
+          <a href="#ideas" class="px-3 py-2 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 rounded-lg transition-colors">Ideas Wall</a>
+          <a href="#departments" class="px-3 py-2 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 rounded-lg transition-colors">Departments</a>
+          <a href="#faq" class="px-3 py-2 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 rounded-lg transition-colors">FAQ</a>
+        </nav>
+
+        <!-- Staff Console Action -->
+        <div class="hidden sm:flex items-center gap-3">
+          <button onclick="openStaffModal()" class="px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-gradient-to-r from-amber-500/20 to-amber-600/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30 transition-all shadow-sm flex items-center gap-2">
+            <i class="fa-solid fa-shield-halved text-amber-400"></i>
+            Staff Console
+          </button>
+        </div>
+
+        <!-- Mobile Drawer Toggle -->
+        <button id="mobileMenuBtn" class="lg:hidden p-2 text-slate-400 hover:text-white text-xl">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+
+      </div>
+    </div>
+
+    <!-- Mobile Drawer -->
+    <div id="mobileMenu" class="hidden lg:hidden bg-slate-900 border-b border-slate-800 px-4 pt-2 pb-6 space-y-2">
+      <a href="#hero" class="block px-3 py-2 text-sm font-medium text-slate-300 hover:text-white rounded-md">Home</a>
+      <a href="#report" class="block px-3 py-2 text-sm font-medium text-slate-300 hover:text-white rounded-md">Report Hazard</a>
+      <a href="#track" class="block px-3 py-2 text-sm font-medium text-slate-300 hover:text-white rounded-md">Track Ticket</a>
+      <a href="#map-section" class="block px-3 py-2 text-sm font-medium text-slate-300 hover:text-white rounded-md">Live Map</a>
+      <a href="#analytics" class="block px-3 py-2 text-sm font-medium text-slate-300 hover:text-white rounded-md">Analytics</a>
+      <a href="#ideas" class="block px-3 py-2 text-sm font-medium text-slate-300 hover:text-white rounded-md">Ideas Wall</a>
+      <a href="#departments" class="block px-3 py-2 text-sm font-medium text-slate-300 hover:text-white rounded-md">Departments</a>
+      <a href="#faq" class="block px-3 py-2 text-sm font-medium text-slate-300 hover:text-white rounded-md">FAQ</a>
+      <button onclick="openStaffModal()" class="w-full mt-2 px-4 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/30 flex items-center justify-center gap-2">
+        <i class="fa-solid fa-shield-halved"></i> Staff Console
+      </button>
+    </div>
+  </header>
+
+  <!-- =========================================================================
+       4.2 HERO SECTION & REAL-TIME KPI TILES
+       ========================================================================= -->
+  <section id="hero" class="hero-gradient text-white pt-16 pb-24 relative overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      
+      <!-- Top Badge -->
+      <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-teal-500/10 border border-teal-500/30 text-teal-300 text-xs font-semibold mb-6">
+        <i class="fa-solid fa-bullhorn text-teal-400"></i>
+        <span>Greater Hyderabad Municipal Corporation (GHMC) Smart Portal</span>
+      </div>
+
+      <div class="grid lg:grid-cols-12 gap-12 items-center">
+        <!-- Hero Text -->
+        <div class="lg:col-span-7 space-y-6">
+          <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight">
+            Every Report Counts. <br>
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 via-emerald-300 to-cyan-400">
+              One Unified Civic Portal.
+            </span>
+          </h1>
+          <p class="text-lg text-slate-300 max-w-2xl font-normal leading-relaxed">
+            Report infrastructure hazards across Hyderabad with instant GPS precision. Our automated Haversine engine merges spatial duplicates, computes transparent civic priority scores, and binds civic departments to statutory SLAs.
+          </p>
+
+          <!-- CTAs -->
+          <div class="flex flex-wrap gap-4 pt-2">
+            <a href="#report" class="px-6 py-3.5 rounded-xl font-bold text-sm bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white shadow-lg shadow-teal-500/25 flex items-center gap-2 transition-all hover:scale-[1.02]">
+              <i class="fa-solid fa-triangle-exclamation"></i>
+              Report a Hazard Now
+            </a>
+            <a href="#track" class="px-6 py-3.5 rounded-xl font-bold text-sm bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700 text-slate-200 flex items-center gap-2 transition-all">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              Track Existing Ticket
+            </a>
+            <a href="#map-section" class="px-6 py-3.5 rounded-xl font-bold text-sm bg-transparent hover:bg-slate-800/50 border border-slate-700 text-slate-300 flex items-center gap-2 transition-all">
+              <i class="fa-solid fa-map-location-dot text-teal-400"></i>
+              View Live Map
+            </a>
+          </div>
+        </div>
+
+        <!-- Hero Graphic Pill Card -->
+        <div class="lg:col-span-5">
+          <div class="bg-slate-900/70 border border-slate-800 rounded-2xl p-6 shadow-2xl backdrop-blur-md space-y-4">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+              <span class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                <i class="fa-solid fa-satellite text-teal-400"></i> Spatial Engine Telemetry
+              </span>
+              <span class="text-xs text-emerald-400 font-semibold">Active Hyderabad Grid</span>
+            </div>
+
+            <div class="space-y-3">
+              <div class="flex items-center justify-between text-xs bg-slate-800/60 p-3 rounded-lg border border-slate-700/50">
+                <span class="text-slate-300"><i class="fa-solid fa-circle-dot text-teal-400 mr-2"></i>Haversine Deduplication Radius</span>
+                <span class="font-mono text-emerald-400 font-bold">&le; 100 Metres</span>
+              </div>
+              <div class="flex items-center justify-between text-xs bg-slate-800/60 p-3 rounded-lg border border-slate-700/50">
+                <span class="text-slate-300"><i class="fa-solid fa-scale-balanced text-amber-400 mr-2"></i>Priority Formulation</span>
+                <span class="font-mono text-amber-300 font-bold">(Sev&times;10) + (Rep&times;5) + (Upv&times;2)</span>
+              </div>
+              <div class="flex items-center justify-between text-xs bg-slate-800/60 p-3 rounded-lg border border-slate-700/50">
+                <span class="text-slate-300"><i class="fa-solid fa-clock text-rose-400 mr-2"></i>Statutory Resolution SLAs</span>
+                <span class="font-mono text-rose-300 font-bold">24h – 72h Enforced</span>
+              </div>
+            </div>
+            
+            <div class="pt-2 text-[11px] text-slate-400 text-center">
+              Covers Banjara Hills, Madhapur, Gachibowli, Charminar & Kukatpally
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4 Real-Time Metric Tiles -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mt-14">
+        
+        <div class="bg-slate-900/80 border border-slate-800 p-5 rounded-2xl shadow-xl backdrop-blur hover:border-slate-700 transition-all">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Reports Filed</span>
+            <div class="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center text-sm">
+              <i class="fa-solid fa-users"></i>
+            </div>
+          </div>
+          <div id="statTotalReports" class="text-3xl sm:text-4xl font-extrabold text-white font-mono">--</div>
+          <p class="text-xs text-slate-400 mt-1">Total citizen submissions</p>
+        </div>
+
+        <div class="bg-slate-900/80 border border-slate-800 p-5 rounded-2xl shadow-xl backdrop-blur hover:border-slate-700 transition-all">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Master Tickets</span>
+            <div class="w-8 h-8 rounded-lg bg-teal-500/10 text-teal-400 flex items-center justify-center text-sm">
+              <i class="fa-solid fa-ticket"></i>
+            </div>
+          </div>
+          <div id="statMasterTickets" class="text-3xl sm:text-4xl font-extrabold text-teal-400 font-mono">--</div>
+          <p class="text-xs text-slate-400 mt-1">Distinct municipal work orders</p>
+        </div>
+
+        <div class="bg-slate-900/80 border border-slate-800 p-5 rounded-2xl shadow-xl backdrop-blur hover:border-slate-700 transition-all">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Resolved</span>
+            <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-sm">
+              <i class="fa-solid fa-circle-check"></i>
+            </div>
+          </div>
+          <div id="statIssuesResolved" class="text-3xl sm:text-4xl font-extrabold text-emerald-400 font-mono">--</div>
+          <p class="text-xs text-slate-400 mt-1">Closed municipal repairs</p>
+        </div>
+
+        <div class="bg-slate-900/80 border border-slate-800 p-5 rounded-2xl shadow-xl backdrop-blur hover:border-slate-700 transition-all">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">SLA Compliance</span>
+            <div class="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center text-sm">
+              <i class="fa-solid fa-stopwatch"></i>
+            </div>
+          </div>
+          <div id="statSlaCompliance" class="text-3xl sm:text-4xl font-extrabold text-amber-300 font-mono">--%</div>
+          <p class="text-xs text-slate-400 mt-1">On-time statutory resolution</p>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       4.3 INTERACTIVE LEAFLET.JS MAP SECTION
+       ========================================================================= -->
+  <section id="map-section" class="py-16 bg-white border-b border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-teal-600 bg-teal-50 px-3 py-1 rounded-full border border-teal-200">
+            Geographic Information System (GIS)
+          </span>
+          <h2 class="text-3xl font-extrabold text-slate-900 mt-2">Hyderabad Live Civic Map</h2>
+          <p class="text-sm text-slate-500 mt-1">
+            Real-time geospatial visualization of civic grievances across Greater Hyderabad. Click map to pin report coordinates.
+          </p>
+        </div>
+
+        <!-- Map Controls -->
+        <div class="flex flex-wrap items-center gap-3">
+          <select id="mapFilterCategory" class="text-xs font-medium bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-teal-500">
+            <option value="All">All Categories</option>
+            <option value="Pothole">🕳️ Potholes</option>
+            <option value="Garbage Dump">🗑️ Garbage Dumps</option>
+            <option value="Streetlight Fault">💡 Streetlight Faults</option>
+            <option value="Water Leakage">🚰 Water Leakages</option>
+            <option value="Broken Footpath">🚶 Broken Footpaths</option>
+          </select>
+
+          <select id="mapFilterStatus" class="text-xs font-medium bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-teal-500">
+            <option value="All">All Statuses</option>
+            <option value="Open">Open</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Resolved">Resolved</option>
+          </select>
+
+          <button onclick="resetMapView()" class="text-xs font-medium bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 px-3 py-2 rounded-lg transition-colors flex items-center gap-1.5">
+            <i class="fa-solid fa-arrows-rotate"></i> Reset View
+          </button>
+        </div>
+      </div>
+
+      <!-- Map Container Card -->
+      <div class="bg-white rounded-2xl overflow-hidden shadow-xl border border-slate-200 relative">
+        <div id="map"></div>
+
+        <!-- Legend Pill Overlay -->
+        <div class="absolute bottom-4 left-4 z-[400] bg-white/95 backdrop-blur-md p-3.5 rounded-xl border border-slate-200 shadow-lg text-xs space-y-2 hidden sm:block">
+          <div class="font-bold text-slate-800 border-b border-slate-200 pb-1">Legend</div>
+          <div class="grid grid-cols-2 gap-x-4 gap-y-1">
+            <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-rose-500 inline-block"></span> Pothole</div>
+            <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-emerald-500 inline-block"></span> Garbage Dump</div>
+            <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-amber-500 inline-block"></span> Streetlight</div>
+            <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-blue-500 inline-block"></span> Water Leak</div>
+            <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-purple-500 inline-block"></span> Footpath</div>
+          </div>
+        </div>
+
+        <!-- Pinning Toast Notification -->
+        <div id="mapPinToast" class="absolute top-4 right-4 z-[400] bg-slate-900/95 text-white text-xs px-4 py-2.5 rounded-xl shadow-2xl border border-teal-500/50 hidden transition-all flex items-center gap-2">
+          <i class="fa-solid fa-location-dot text-teal-400"></i>
+          <span id="mapPinToastText">Pinned coordinates</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       4.4 HAZARD REPORTING ENGINE
+       ========================================================================= -->
+  <section id="report" class="py-16 bg-slate-50 border-b border-slate-200">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="text-center max-w-2xl mx-auto mb-10">
+        <span class="text-xs font-bold uppercase tracking-wider text-teal-600 bg-teal-50 px-3 py-1 rounded-full border border-teal-200">
+          Citizen Reporting Portal
+        </span>
+        <h2 class="text-3xl font-extrabold text-slate-900 mt-2">Report a Civic Hazard</h2>
+        <p class="text-sm text-slate-500 mt-1">
+          Submit infrastructure issues with photos and GPS coordinates. Duplicate issues within 100 metres are automatically merged to escalate municipal priority.
+        </p>
+      </div>
+
+      <div class="bg-white rounded-2xl shadow-xl border border-slate-200 p-6 sm:p-8">
+        
+        <!-- Live Routing Preview Banner -->
+        <div id="deptBanner" class="mb-6 p-4 rounded-xl bg-teal-50 border border-teal-200 text-teal-900 flex items-start gap-4">
+          <div class="text-3xl" id="deptBannerIcon">🕳️</div>
+          <div class="flex-1">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase tracking-wider text-teal-700">Assigned Municipal Authority</span>
+              <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-teal-200/60 text-teal-900 font-mono" id="deptBannerSla">48h SLA Target</span>
+            </div>
+            <div class="font-bold text-base mt-0.5" id="deptBannerName">Roads & Traffic Infrastructure (GHMC)</div>
+            <div class="text-xs text-teal-700 mt-0.5">Complaints in this category are automatically routed to municipal repair teams.</div>
+          </div>
+        </div>
+
+        <form id="reportForm" onsubmit="handleReportSubmit(event)" class="space-y-6">
+          
+          <div class="grid sm:grid-cols-2 gap-6">
+            <!-- Category -->
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Category *</label>
+              <select id="formCategory" onchange="updateDeptBanner()" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-teal-500 font-medium">
+                <option value="Pothole">🕳️ Pothole & Road Hazard</option>
+                <option value="Garbage Dump">🗑️ Garbage Dump & Solid Waste</option>
+                <option value="Streetlight Fault">💡 Streetlight & Electrical Fault</option>
+                <option value="Water Leakage">🚰 Water Supply & Pipe Leakage</option>
+                <option value="Broken Footpath">🚶 Broken Footpath & Walkway</option>
+              </select>
+            </div>
+
+            <!-- Neighborhood Hotspot Dropdown -->
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Neighborhood / Zone *</label>
+              <select id="formArea" onchange="onAreaSelect()" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-teal-500 font-medium">
+                <option value="Banjara Hills">Banjara Hills (Central)</option>
+                <option value="Madhapur">Madhapur (Hitec City / IT Corridor)</option>
+                <option value="Gachibowli">Gachibowli (Financial District)</option>
+                <option value="Charminar">Charminar (Old City / Core)</option>
+                <option value="Kukatpally">Kukatpally (KPHB Colony)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Title -->
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Complaint Title *</label>
+            <input type="text" id="formTitle" required placeholder="e.g., Deep dangerous pothole opposite City Center Mall" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-teal-500">
+          </div>
+
+          <!-- Description -->
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Detailed Description</label>
+            <textarea id="formDescription" rows="3" placeholder="Provide additional landmark clues, severity observations, or traffic impact details..." class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-teal-500"></textarea>
+          </div>
+
+          <!-- Severity Slider (1-5) -->
+          <div class="bg-slate-50 border border-slate-200 p-4 rounded-xl space-y-2">
+            <div class="flex items-center justify-between">
+              <label class="text-xs font-bold uppercase tracking-wider text-slate-700">Observed Hazard Severity *</label>
+              <span id="severityBadge" class="text-xs font-bold px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 border border-amber-200">
+                Level 3 — Serious Hazard (+30 Pts)
+              </span>
+            </div>
+            <input type="range" id="formSeverity" min="1" max="5" value="3" oninput="updateSeverityBadge(this.value)" class="w-full accent-teal-600 cursor-pointer">
+            <div class="flex justify-between text-[11px] text-slate-400 font-semibold px-1">
+              <span>1: Minor</span>
+              <span>2: Moderate</span>
+              <span>3: Serious</span>
+              <span>4: Severe</span>
+              <span>5: Critical Danger</span>
+            </div>
+          </div>
+
+          <!-- GPS Coordinates -->
+          <div class="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Latitude (GPS) *</label>
+              <input type="number" step="0.000001" id="formLat" required value="17.415600" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm font-mono text-slate-800 focus:outline-none focus:ring-2 focus:ring-teal-500">
+            </div>
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Longitude (GPS) *</label>
+              <input type="number" step="0.000001" id="formLon" required value="78.435000" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm font-mono text-slate-800 focus:outline-none focus:ring-2 focus:ring-teal-500">
+            </div>
+          </div>
+          <p class="text-[11px] text-slate-500 italic">
+            <i class="fa-solid fa-circle-info text-teal-600"></i> Tip: You can also click anywhere on the live map above to pin coordinates automatically.
+          </p>
+
+          <!-- Photo Upload (HTML5 FileReader) -->
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Photographic Evidence (Optional)</label>
+            <div id="dropZone" class="border-2 border-dashed border-slate-300 hover:border-teal-500 rounded-xl p-6 text-center transition-colors bg-slate-50/50 cursor-pointer" onclick="document.getElementById('photoInput').click()">
+              <input type="file" id="photoInput" accept="image/*" class="hidden" onchange="handleFileSelect(event)">
+              <div id="uploadPrompt" class="space-y-2">
+                <i class="fa-solid fa-cloud-arrow-up text-3xl text-slate-400"></i>
+                <p class="text-sm text-slate-600 font-medium">Click or drag & drop a photo here</p>
+                <p class="text-xs text-slate-400">PNG, JPG, JPEG, WEBP up to 5 MB</p>
+              </div>
+              <div id="uploadPreviewContainer" class="hidden flex-col items-center gap-3">
+                <img id="uploadPreview" class="max-h-48 rounded-lg shadow border border-slate-200" alt="Evidence Preview">
+                <button type="button" onclick="clearPhoto(event)" class="text-xs text-rose-600 hover:text-rose-700 font-semibold flex items-center gap-1">
+                  <i class="fa-solid fa-trash-can"></i> Remove Photo
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit" id="submitBtn" class="w-full py-4 rounded-xl font-bold text-sm bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white shadow-lg shadow-teal-500/25 flex items-center justify-center gap-2 transition-all">
+            <i class="fa-solid fa-paper-plane"></i>
+            Submit Civic Grievance
+          </button>
+
+        </form>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       4.5 LIVE TICKET TRACKER & UPVOTING
+       ========================================================================= -->
+  <section id="track" class="py-16 bg-white border-b border-slate-200">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="text-center max-w-2xl mx-auto mb-10">
+        <span class="text-xs font-bold uppercase tracking-wider text-teal-600 bg-teal-50 px-3 py-1 rounded-full border border-teal-200">
+          Transparent Telemetry
+        </span>
+        <h2 class="text-3xl font-extrabold text-slate-900 mt-2">Track Ticket & Civic Upvote</h2>
+        <p class="text-sm text-slate-500 mt-1">
+          Enter any 4-digit reference ID (e.g., <code class="bg-slate-100 text-teal-700 font-mono px-1 rounded">NM-1001</code>) to track progress milestones, check SLA compliance, and upvote the issue.
+        </p>
+      </div>
+
+      <!-- Search Box & Quick Pills -->
+      <div class="bg-slate-50 rounded-2xl border border-slate-200 p-6 shadow-md mb-8">
+        <div class="flex flex-col sm:flex-row gap-3">
+          <div class="relative flex-1">
+            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+              <i class="fa-solid fa-hashtag"></i>
+            </div>
+            <input type="text" id="trackSearchInput" placeholder="Enter Ticket Reference (e.g. NM-1001)" class="w-full bg-white border border-slate-300 rounded-xl pl-10 pr-4 py-3 text-sm font-mono uppercase text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500">
+          </div>
+          <button onclick="searchTicket()" class="px-6 py-3 rounded-xl font-bold text-sm bg-teal-600 hover:bg-teal-700 text-white shadow transition-all flex items-center justify-center gap-2">
+            <i class="fa-solid fa-search"></i>
+            Track Status
+          </button>
+        </div>
+
+        <!-- Quick Demo Ticket Pills -->
+        <div class="mt-4 flex flex-wrap items-center gap-2 text-xs">
+          <span class="text-slate-400 font-medium">Quick inspect:</span>
+          <button onclick="setTrackId('NM-1001')" class="px-2.5 py-1 bg-white border border-slate-200 text-slate-700 rounded-md font-mono hover:border-teal-500">NM-1001</button>
+          <button onclick="setTrackId('NM-1005')" class="px-2.5 py-1 bg-white border border-slate-200 text-slate-700 rounded-md font-mono hover:border-teal-500">NM-1005</button>
+          <button onclick="setTrackId('NM-1012')" class="px-2.5 py-1 bg-white border border-slate-200 text-slate-700 rounded-md font-mono hover:border-teal-500">NM-1012</button>
+          <button onclick="setTrackId('NM-1025')" class="px-2.5 py-1 bg-white border border-slate-200 text-slate-700 rounded-md font-mono hover:border-teal-500">NM-1025</button>
+        </div>
+      </div>
+
+      <!-- Ticket Display Card (Initially Hidden) -->
+      <div id="trackResultContainer" class="hidden bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
+        
+        <!-- Header Banner -->
+        <div class="bg-slate-900 text-white p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <div class="flex items-center gap-3">
+              <span id="ticketIdBadge" class="text-2xl font-black font-mono tracking-wider text-teal-400">NM-XXXX</span>
+              <span id="ticketStatusBadge" class="px-3 py-1 text-xs font-bold rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40">Open</span>
+              <span id="ticketSlaBadge" class="px-3 py-1 text-xs font-bold rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">Within SLA</span>
+            </div>
+            <h3 id="ticketTitle" class="text-xl font-bold mt-2 text-slate-100">Ticket Title</h3>
+            <p id="ticketAreaCategory" class="text-xs text-slate-400 mt-1">Banjara Hills • Pothole</p>
+          </div>
+
+          <!-- Interactive Upvote Button -->
+          <div class="text-right">
+            <button id="upvoteBtn" onclick="handleUpvote()" class="px-5 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-bold text-xs uppercase tracking-wider shadow-lg shadow-amber-500/20 flex items-center gap-2 transition-all active:scale-95">
+              <i class="fa-solid fa-thumbs-up"></i>
+              <span>Upvote Issue (+2 Pts)</span>
+            </button>
+            <div class="text-[11px] text-slate-400 mt-1.5 font-medium" id="upvoteCountText">0 community upvotes</div>
+          </div>
+        </div>
+
+        <!-- 4-Stage Visual Progress Stepper -->
+        <div class="p-6 sm:p-8 border-b border-slate-200 bg-slate-50/50">
+          <div class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-4">Milestone Progress</div>
+          <div class="grid grid-cols-4 gap-2 text-center relative">
+            
+            <div id="step1" class="space-y-2">
+              <div class="w-10 h-10 mx-auto rounded-full bg-teal-600 text-white flex items-center justify-center font-bold text-sm shadow">
+                <i class="fa-solid fa-check"></i>
+              </div>
+              <div class="text-xs font-bold text-slate-800">1. Filed</div>
+              <div class="text-[10px] text-slate-400 hidden sm:block">Citizen Submission</div>
+            </div>
+
+            <div id="step2" class="space-y-2">
+              <div id="step2Icon" class="w-10 h-10 mx-auto rounded-full bg-teal-600 text-white flex items-center justify-center font-bold text-sm shadow">
+                <i class="fa-solid fa-check"></i>
+              </div>
+              <div class="text-xs font-bold text-slate-800">2. Routed</div>
+              <div class="text-[10px] text-slate-400 hidden sm:block">Assigned to Dept</div>
+            </div>
+
+            <div id="step3" class="space-y-2">
+              <div id="step3Icon" class="w-10 h-10 mx-auto rounded-full bg-slate-200 text-slate-600 flex items-center justify-center font-bold text-sm">
+                3
+              </div>
+              <div class="text-xs font-bold text-slate-800">3. In Progress</div>
+              <div class="text-[10px] text-slate-400 hidden sm:block">Crew Dispatched</div>
+            </div>
+
+            <div id="step4" class="space-y-2">
+              <div id="step4Icon" class="w-10 h-10 mx-auto rounded-full bg-slate-200 text-slate-600 flex items-center justify-center font-bold text-sm">
+                4
+              </div>
+              <div class="text-xs font-bold text-slate-800">4. Resolved</div>
+              <div class="text-[10px] text-slate-400 hidden sm:block">Closed & Verified</div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Telemetry & Data Grid -->
+        <div class="p-6 sm:p-8 grid md:grid-cols-2 gap-6">
+          <div class="space-y-4">
+            <div>
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Responsible Department</span>
+              <p id="ticketDept" class="text-sm font-semibold text-slate-800 mt-0.5">Roads & Traffic Infrastructure (GHMC)</p>
+            </div>
+            <div>
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Description</span>
+              <p id="ticketDesc" class="text-sm text-slate-600 mt-0.5">Detailed description will appear here...</p>
+            </div>
+            <div>
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Coordinates</span>
+              <p id="ticketCoords" class="text-xs font-mono text-slate-600 mt-0.5">17.415600, 78.435000</p>
+            </div>
+            <div>
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Created Timestamp</span>
+              <p id="ticketCreatedAt" class="text-xs font-mono text-slate-600 mt-0.5">--</p>
+            </div>
+          </div>
+
+          <div class="space-y-4">
+            <!-- Priority Metrics Card -->
+            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-700">Civic Priority Score</span>
+                <span id="ticketPriorityTier" class="text-xs font-bold px-2 py-0.5 rounded-full bg-rose-100 text-rose-800">Critical</span>
+              </div>
+              <div class="flex items-baseline gap-2">
+                <span id="ticketPriorityScore" class="text-3xl font-black font-mono text-slate-900">85</span>
+                <span class="text-xs text-slate-400 font-semibold">/ 100 points</span>
+              </div>
+              <div class="text-[11px] text-slate-500 leading-relaxed" id="ticketPriorityFormulaBreakdown">
+                Severity (3&times;10) + Corroborating Reports (2&times;5) + Upvotes (5&times;2) = 50 pts
+              </div>
+            </div>
+
+            <!-- Merged Citizens Corroboration -->
+            <div class="bg-teal-50/70 p-4 rounded-xl border border-teal-200 flex items-center justify-between">
+              <div>
+                <span class="text-xs font-bold uppercase tracking-wider text-teal-800">Citizens Corroborated</span>
+                <p class="text-xs text-teal-700 mt-0.5">Spatial duplicates merged within 100m</p>
+              </div>
+              <span id="ticketReportCount" class="text-2xl font-black font-mono text-teal-900">1</span>
+            </div>
+
+            <!-- Uploaded Image -->
+            <div id="ticketImageContainer" class="hidden">
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-1">Attached Photographic Proof</span>
+              <img id="ticketImage" class="rounded-xl border border-slate-200 max-h-48 w-full object-cover shadow-sm" alt="Citizen Photo Proof">
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       4.6 COMMUNITY IDEAS WALL
+       ========================================================================= -->
+  <section id="ideas" class="py-16 bg-slate-50 border-b border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-teal-600 bg-teal-50 px-3 py-1 rounded-full border border-teal-200">
+            Civic Co-Creation
+          </span>
+          <h2 class="text-3xl font-extrabold text-slate-900 mt-2">Community Ideas & Proposals Wall</h2>
+          <p class="text-sm text-slate-500 mt-1">
+            Share progressive civic proposals to make Greater Hyderabad a smarter, cleaner, and more resilient metropolis.
+          </p>
+        </div>
+
+        <button onclick="document.getElementById('ideaFormContainer').classList.toggle('hidden')" class="px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-teal-600 hover:bg-teal-700 text-white shadow transition-all flex items-center gap-2 self-start md:self-auto">
+          <i class="fa-solid fa-lightbulb"></i>
+          Submit Proposal
+        </button>
+      </div>
+
+      <!-- New Idea Form Container (Toggled) -->
+      <div id="ideaFormContainer" class="hidden mb-8 bg-white p-6 rounded-2xl border border-slate-200 shadow-xl max-w-2xl mx-auto">
+        <h3 class="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
+          <i class="fa-solid fa-pen-to-square text-teal-600"></i> Propose a Civic Enhancement
+        </h3>
+        <form onsubmit="handleSuggestionSubmit(event)" class="space-y-4">
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Proposal Title *</label>
+            <input type="text" id="ideaTitle" required placeholder="e.g., Rainwater Harvesting Mandate for Metro Pillars" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-teal-500">
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Detailed Description *</label>
+            <textarea id="ideaDesc" rows="3" required placeholder="Explain your concept, expected municipal benefits, and feasibility..." class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-teal-500"></textarea>
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Your Name / Resident Society</label>
+            <input type="text" id="ideaAuthor" placeholder="e.g., Ananya Sharma (or leave blank for Anonymous)" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-teal-500">
+          </div>
+          <div class="flex justify-end gap-3 pt-2">
+            <button type="button" onclick="document.getElementById('ideaFormContainer').classList.add('hidden')" class="px-4 py-2 text-xs font-bold text-slate-600 hover:text-slate-800">Cancel</button>
+            <button type="submit" class="px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-teal-600 hover:bg-teal-700 text-white shadow">Submit to Wall</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Ideas Card Grid -->
+      <div id="ideasGrid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Rendered by JS -->
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       4.7 CITY ANALYTICS DASHBOARD
+       ========================================================================= -->
+  <section id="analytics" class="py-16 bg-white border-b border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-teal-600 bg-teal-50 px-3 py-1 rounded-full border border-teal-200">
+            Executive Intelligence
+          </span>
+          <h2 class="text-3xl font-extrabold text-slate-900 mt-2">Civic Analytics & Priority Ranking</h2>
+          <p class="text-sm text-slate-500 mt-1">
+            Real-time visual breakdown of work orders and the top 10 most critical civic hazards demanding urgent municipal intervention.
+          </p>
+        </div>
+
+        <!-- 1-Click CSV Export Button -->
+        <a href="/api/export-csv" class="px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-slate-900 hover:bg-slate-800 text-white shadow flex items-center gap-2 self-start md:self-auto transition-all">
+          <i class="fa-solid fa-file-csv text-teal-400 text-sm"></i>
+          Export Full Civic CSV
+        </a>
+      </div>
+
+      <!-- Charts Row -->
+      <div class="grid lg:grid-cols-12 gap-8 mb-12">
+        <!-- Category Bar Chart -->
+        <div class="lg:col-span-7 bg-slate-50 p-6 rounded-2xl border border-slate-200 shadow-sm">
+          <h3 class="text-sm font-bold uppercase tracking-wider text-slate-700 mb-4 flex items-center gap-2">
+            <i class="fa-solid fa-chart-column text-teal-600"></i> Issues by Civic Category
+          </h3>
+          <div class="h-64">
+            <canvas id="categoryChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Status Donut Chart -->
+        <div class="lg:col-span-5 bg-slate-50 p-6 rounded-2xl border border-slate-200 shadow-sm">
+          <h3 class="text-sm font-bold uppercase tracking-wider text-slate-700 mb-4 flex items-center gap-2">
+            <i class="fa-solid fa-chart-pie text-teal-600"></i> Work Order Status Breakdown
+          </h3>
+          <div class="h-64 flex items-center justify-center">
+            <canvas id="statusChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top 10 Critical Issues Table -->
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-lg overflow-hidden">
+        <div class="p-5 bg-slate-900 text-white flex items-center justify-between">
+          <h3 class="text-sm font-bold uppercase tracking-wider flex items-center gap-2">
+            <i class="fa-solid fa-fire text-rose-500"></i> Top 10 Critical Priority Issues (Escalated Queue)
+          </h3>
+          <span class="text-xs text-slate-400 font-mono">Ranked by Priority Score DESC</span>
+        </div>
+
+        <div class="overflow-x-auto custom-scroll">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-slate-100 text-slate-700 uppercase tracking-wider border-b border-slate-200 font-bold">
+              <tr>
+                <th class="py-3 px-4">Ticket</th>
+                <th class="py-3 px-4">Category</th>
+                <th class="py-3 px-4">Area</th>
+                <th class="py-3 px-4 text-center">Reports</th>
+                <th class="py-3 px-4 text-center">Upvotes</th>
+                <th class="py-3 px-4">Priority Tier</th>
+                <th class="py-3 px-4">Status</th>
+                <th class="py-3 px-4">SLA Compliance</th>
+                <th class="py-3 px-4 text-right">Action</th>
+              </tr>
+            </thead>
+            <tbody id="topIssuesTableBody" class="divide-y divide-slate-100 font-medium text-slate-700">
+              <!-- Rendered by JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       4.8 DEPARTMENT DIRECTORY & FAQ
+       ========================================================================= -->
+  <section id="departments" class="py-16 bg-slate-50 border-b border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="text-center max-w-2xl mx-auto mb-12">
+        <span class="text-xs font-bold uppercase tracking-wider text-teal-600 bg-teal-50 px-3 py-1 rounded-full border border-teal-200">
+          Emergency Helplines & Governance
+        </span>
+        <h2 class="text-3xl font-extrabold text-slate-900 mt-2">Municipal Department Directory</h2>
+        <p class="text-sm text-slate-500 mt-1">
+          Direct access to the statutory civic divisions of Hyderabad with official emergency contact numbers.
+        </p>
+      </div>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+        
+        <!-- Roads -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+          <div class="text-3xl mb-3">🕳️</div>
+          <h4 class="text-base font-bold text-slate-900">Roads & Traffic Infrastructure</h4>
+          <p class="text-xs text-slate-500 mt-1">Greater Hyderabad Municipal Corporation (GHMC)</p>
+          <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+            <span class="text-slate-400 font-semibold">Toll-Free Helpline</span>
+            <a href="tel:18004250014" class="font-mono font-bold text-teal-600 hover:underline">1800-425-0014</a>
+          </div>
+          <div class="mt-1 flex items-center justify-between text-xs">
+            <span class="text-slate-400 font-semibold">Standard SLA</span>
+            <span class="font-bold text-slate-800">48 Hours</span>
+          </div>
+        </div>
+
+        <!-- Sanitation -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+          <div class="text-3xl mb-3">🗑️</div>
+          <h4 class="text-base font-bold text-slate-900">Sanitation & Solid Waste</h4>
+          <p class="text-xs text-slate-500 mt-1">GHMC Environmental Services Wing</p>
+          <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+            <span class="text-slate-400 font-semibold">Sanitation Control</span>
+            <a href="tel:04021111111" class="font-mono font-bold text-teal-600 hover:underline">040-2111-1111</a>
+          </div>
+          <div class="mt-1 flex items-center justify-between text-xs">
+            <span class="text-slate-400 font-semibold">Standard SLA</span>
+            <span class="font-bold text-slate-800">24 Hours</span>
+          </div>
+        </div>
+
+        <!-- Electricity -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+          <div class="text-3xl mb-3">💡</div>
+          <h4 class="text-base font-bold text-slate-900">Electricity & Streetlights</h4>
+          <p class="text-xs text-slate-500 mt-1">TG Southern Power Distribution (TSSPDCL)</p>
+          <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+            <span class="text-slate-400 font-semibold">Power Helpline</span>
+            <a href="tel:1912" class="font-mono font-bold text-teal-600 hover:underline">1912</a>
+          </div>
+          <div class="mt-1 flex items-center justify-between text-xs">
+            <span class="text-slate-400 font-semibold">Standard SLA</span>
+            <span class="font-bold text-slate-800">36 Hours</span>
+          </div>
+        </div>
+
+        <!-- Water -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+          <div class="text-3xl mb-3">🚰</div>
+          <h4 class="text-base font-bold text-slate-900">Water Supply & Drainage</h4>
+          <p class="text-xs text-slate-500 mt-1">Hyderabad Metro Water Supply (HMWSSB)</p>
+          <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+            <span class="text-slate-400 font-semibold">Customer Care</span>
+            <a href="tel:155313" class="font-mono font-bold text-teal-600 hover:underline">155313</a>
+          </div>
+          <div class="mt-1 flex items-center justify-between text-xs">
+            <span class="text-slate-400 font-semibold">Standard SLA</span>
+            <span class="font-bold text-slate-800">24 Hours</span>
+          </div>
+        </div>
+
+        <!-- PWD -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+          <div class="text-3xl mb-3">🚶</div>
+          <h4 class="text-base font-bold text-slate-900">Public Works Department</h4>
+          <p class="text-xs text-slate-500 mt-1">PWD Urban Walkways & Bridges</p>
+          <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+            <span class="text-slate-400 font-semibold">Control Room</span>
+            <a href="tel:04023225397" class="font-mono font-bold text-teal-600 hover:underline">040-2322-5397</a>
+          </div>
+          <div class="mt-1 flex items-center justify-between text-xs">
+            <span class="text-slate-400 font-semibold">Standard SLA</span>
+            <span class="font-bold text-slate-800">72 Hours</span>
+          </div>
+        </div>
+
+        <!-- Emergency Police/Fire -->
+        <div class="bg-gradient-to-br from-rose-50 to-orange-50 p-6 rounded-2xl border border-rose-200 shadow-sm">
+          <div class="text-3xl mb-3">🚨</div>
+          <h4 class="text-base font-bold text-rose-900">Emergency & Disaster Management</h4>
+          <p class="text-xs text-rose-700 mt-1">Disaster Response Force (DRF / Dial 100)</p>
+          <div class="mt-4 pt-3 border-t border-rose-200/60 flex items-center justify-between text-xs">
+            <span class="text-rose-700 font-semibold">Emergency Dial</span>
+            <span class="font-mono font-bold text-rose-700">100 / 101</span>
+          </div>
+          <div class="mt-1 flex items-center justify-between text-xs">
+            <span class="text-rose-700 font-semibold">Response Target</span>
+            <span class="font-bold text-rose-900">Immediate</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Accordion FAQ -->
+      <div id="faq" class="max-w-3xl mx-auto space-y-4">
+        <h3 class="text-xl font-extrabold text-slate-900 text-center mb-6">Frequently Asked Questions</h3>
+        
+        <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
+          <button onclick="toggleFaq(1)" class="w-full flex items-center justify-between text-left font-bold text-sm text-slate-800">
+            <span>How does Haversine spatial duplicate detection work?</span>
+            <i id="faqIcon1" class="fa-solid fa-chevron-down text-xs text-slate-400 transition-transform"></i>
+          </button>
+          <div id="faqAnswer1" class="hidden text-xs text-slate-600 mt-2 leading-relaxed pt-2 border-t border-slate-100">
+            When a citizen reports an issue, the system calculates the great-circle distance between the incoming GPS coordinate and all active tickets of the same category using the Haversine formula. If the distance is &le; 100 metres, it merges the report into the existing master ticket, increments its corroboration count, and raises the priority score instead of spawning redundant work orders.
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
+          <button onclick="toggleFaq(2)" class="w-full flex items-center justify-between text-left font-bold text-sm text-slate-800">
+            <span>How is the Civic Priority Score calculated?</span>
+            <i id="faqIcon2" class="fa-solid fa-chevron-down text-xs text-slate-400 transition-transform"></i>
+          </button>
+          <div id="faqAnswer2" class="hidden text-xs text-slate-600 mt-2 leading-relaxed pt-2 border-t border-slate-100">
+            The priority score is computed on a 0–100 scale using the transparent formula: <br>
+            <code class="bg-slate-100 px-1 py-0.5 rounded font-mono text-teal-700 font-semibold">Priority = min(100, (Severity &times; 10) + (Report Count &times; 5) + (Upvotes &times; 2))</code>.<br>
+            Issues scoring &ge; 80 points are automatically classified as Critical, ensuring that high-severity hazards corroborated by multiple citizens receive immediate crew dispatch.
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
+          <button onclick="toggleFaq(3)" class="w-full flex items-center justify-between text-left font-bold text-sm text-slate-800">
+            <span>What happens when a statutory SLA is breached?</span>
+            <i id="faqIcon3" class="fa-solid fa-chevron-down text-xs text-slate-400 transition-transform"></i>
+          </button>
+          <div id="faqAnswer3" class="hidden text-xs text-slate-600 mt-2 leading-relaxed pt-2 border-t border-slate-100">
+            Each category is bound to a strict statutory deadline (24 hours for water leaks/garbage, 36h for streetlights, 48h for potholes, 72h for footpaths). If a ticket remains unresolved past this timeframe, it automatically displays an animated ⚠️ SLA Breached alert on both public tracking and executive consoles.
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       4.9 MUNICIPAL STAFF CONSOLE MODAL
+       ========================================================================= -->
+  <div id="staffModal" class="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden border border-slate-200">
+      
+      <!-- Modal Header -->
+      <div class="bg-slate-900 text-white p-5 flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center text-sm">
+            <i class="fa-solid fa-shield-halved"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-bold">Municipal Staff Console</h3>
+            <p class="text-[11px] text-slate-400">GHMC Administrative Work Order Dispatch</p>
+          </div>
+        </div>
+        <button onclick="closeStaffModal()" class="text-slate-400 hover:text-white text-lg">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <form onsubmit="handleStaffUpdate(event)" class="p-6 space-y-4">
+        
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Select Work Order (Ticket ID) *</label>
+          <select id="staffTicketSelect" onchange="onStaffTicketSelect()" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs font-mono text-slate-800 focus:outline-none focus:ring-2 focus:ring-teal-500">
+            <option value="">-- Choose Ticket --</option>
+          </select>
+        </div>
+
+        <div id="staffTicketPreview" class="hidden p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs space-y-1">
+          <div class="font-bold text-slate-800" id="staffPreviewTitle">Title</div>
+          <div class="text-slate-500" id="staffPreviewCategory">Category</div>
+          <div class="text-slate-500" id="staffPreviewArea">Area</div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">New Operational Status *</label>
+          <div class="grid grid-cols-3 gap-2">
+            <label class="flex items-center justify-center p-3 rounded-xl border border-slate-200 bg-slate-50 text-xs font-bold cursor-pointer hover:bg-slate-100 has-[:checked]:bg-amber-500 has-[:checked]:text-white has-[:checked]:border-amber-600">
+              <input type="radio" name="staffStatus" value="Open" checked class="hidden"> Open
+            </label>
+            <label class="flex items-center justify-center p-3 rounded-xl border border-slate-200 bg-slate-50 text-xs font-bold cursor-pointer hover:bg-slate-100 has-[:checked]:bg-blue-600 has-[:checked]:text-white has-[:checked]:border-blue-700">
+              <input type="radio" name="staffStatus" value="In Progress" class="hidden"> In Progress
+            </label>
+            <label class="flex items-center justify-center p-3 rounded-xl border border-slate-200 bg-slate-50 text-xs font-bold cursor-pointer hover:bg-slate-100 has-[:checked]:bg-emerald-600 has-[:checked]:text-white has-[:checked]:border-emerald-700">
+              <input type="radio" name="staffStatus" value="Resolved" class="hidden"> Resolved
+            </label>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Staff Security Passcode *</label>
+          <input type="password" id="staffPassword" required placeholder="Enter passcode (default: admin123)" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-teal-500">
+          <p class="text-[10px] text-slate-400 mt-1">Default academic verification passcode: <code class="font-mono text-teal-600">admin123</code></p>
+        </div>
+
+        <div id="staffModalError" class="hidden text-xs text-rose-600 font-semibold p-2 bg-rose-50 rounded-lg"></div>
+
+        <div class="flex justify-end gap-3 pt-3 border-t border-slate-100">
+          <button type="button" onclick="closeStaffModal()" class="px-4 py-2.5 text-xs font-bold text-slate-600 hover:text-slate-800">Cancel</button>
+          <button type="submit" class="px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-teal-600 hover:bg-teal-700 text-white shadow">Commit Status Update</button>
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+
+  <!-- Submission Response Alert Modal -->
+  <div id="alertModal" class="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 text-center border border-slate-200">
+      <div id="alertIcon" class="w-16 h-16 rounded-full flex items-center justify-center mx-auto text-3xl mb-4"></div>
+      <h3 id="alertTitle" class="text-xl font-extrabold text-slate-900 mb-2">Notice</h3>
+      <p id="alertMessage" class="text-xs text-slate-600 leading-relaxed mb-6"></p>
+      <button onclick="closeAlertModal()" class="w-full py-3 rounded-xl font-bold text-xs uppercase tracking-wider bg-slate-900 hover:bg-slate-800 text-white shadow">
+        Acknowledge & Continue
+      </button>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       FOOTER
+       ========================================================================= -->
+  <footer class="bg-slate-950 text-slate-400 py-12 border-t border-slate-900 text-xs mt-auto">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+        
+        <div class="flex items-center gap-2">
+          <span class="text-base font-extrabold text-white">Nagar<span class="text-teal-400">Mithra</span></span>
+          <span class="text-slate-600">•</span>
+          <span>Official Civic-Tech Portal for Greater Hyderabad Municipal Corporation (GHMC)</span>
+        </div>
+
+        <div class="text-slate-500">
+          Zero-Dependency Python Architecture • Academic Submission &copy; 2026
+        </div>
+
+      </div>
+    </div>
+  </footer>
+
+  <!-- =========================================================================
+       CLIENT-SIDE JAVASCRIPT ENGINE
+       ========================================================================= -->
+  <script>
+    // State storage
+    let allIssues = [];
+    let map = null;
+    let markersLayer = null;
+    let categoryChart = null;
+    let statusChart = null;
+    let selectedPhotoBase64 = "";
+
+    const HOTSPOTS = {
+      "Banjara Hills": { lat: 17.415600, lon: 78.435000 },
+      "Madhapur": { lat: 17.448300, lon: 78.391500 },
+      "Gachibowli": { lat: 17.440100, lon: 78.348900 },
+      "Charminar": { lat: 17.361600, lon: 78.474700 },
+      "Kukatpally": { lat: 17.494800, lon: 78.399600 }
+    };
+
+    const DEPT_INFO = {
+      "Pothole": { icon: "🕳️", name: "Roads & Traffic Infrastructure (GHMC)", sla: "48h SLA Target" },
+      "Garbage Dump": { icon: "🗑️", name: "Sanitation & Solid Waste Management", sla: "24h SLA Target" },
+      "Streetlight Fault": { icon: "💡", name: "Electricity & Public Lighting (TSSPDCL)", sla: "36h SLA Target" },
+      "Water Leakage": { icon: "🚰", name: "Water Supply & Drainage Board (HMWSSB)", sla: "24h SLA Target" },
+      "Broken Footpath": { icon: "🚶", name: "Public Works Department (PWD Walkways)", sla: "72h SLA Target" }
+    };
+
+    const CATEGORY_COLORS = {
+      "Pothole": "#ef4444",
+      "Garbage Dump": "#10b981",
+      "Streetlight Fault": "#f59e0b",
+      "Water Leakage": "#3b82f6",
+      "Broken Footpath": "#a855f7"
+    };
+
+    document.addEventListener("DOMContentLoaded", () => {
+      initMap();
+      fetchStats();
+      fetchIssues();
+      fetchSuggestions();
+      updateDeptBanner();
+
+      // Mobile menu toggle
+      document.getElementById("mobileMenuBtn").addEventListener("click", () => {
+        document.getElementById("mobileMenu").classList.toggle("hidden");
+      });
+
+      // Filter change listeners
+      document.getElementById("mapFilterCategory").addEventListener("change", applyMapFilters);
+      document.getElementById("mapFilterStatus").addEventListener("change", applyMapFilters);
+    });
+
+    // 1. Leaflet Map Initialization
+    function initMap() {
+      map = L.map('map').setView([17.4156, 78.4350], 12);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 18,
+        attribution: '&copy; OpenStreetMap contributors'
+      }).addTo(map);
+
+      markersLayer = L.layerGroup().addTo(map);
+
+      // Click to pin feature
+      map.on('click', (e) => {
+        const lat = e.latlng.lat.toFixed(6);
+        const lon = e.latlng.lng.toFixed(6);
+        document.getElementById('formLat').value = lat;
+        document.getElementById('formLon').value = lon;
+
+        // Show toast
+        const toast = document.getElementById('mapPinToast');
+        document.getElementById('mapPinToastText').innerText = `📍 Pinned coordinates: ${lat}, ${lon}`;
+        toast.classList.remove('hidden');
+        setTimeout(() => toast.classList.add('hidden'), 3500);
+      });
+    }
+
+    function resetMapView() {
+      map.setView([17.4156, 78.4350], 12);
+      document.getElementById("mapFilterCategory").value = "All";
+      document.getElementById("mapFilterStatus").value = "All";
+      applyMapFilters();
+    }
+
+    // 2. Fetch Stats & Render Charts
+    async function fetchStats() {
+      try {
+        const res = await fetch('/api/stats');
+        const data = await res.json();
+        
+        document.getElementById('statTotalReports').innerText = data.total_reports || 0;
+        document.getElementById('statMasterTickets').innerText = data.master_tickets || 0;
+        document.getElementById('statIssuesResolved').innerText = data.issues_resolved || 0;
+        document.getElementById('statSlaCompliance').innerText = `${data.sla_compliance || 0}%`;
+
+        renderCharts(data.category_counts, data.status_counts);
+      } catch (err) {
+        console.error("Error fetching stats:", err);
+      }
+    }
+
+    function renderCharts(catCounts, statusCounts) {
+      // Category Bar Chart
+      const catCtx = document.getElementById('categoryChart').getContext('2d');
+      const catLabels = Object.keys(catCounts);
+      const catValues = Object.values(catCounts);
+      const catColors = catLabels.map(l => CATEGORY_COLORS[l] || "#0f766e");
+
+      if (categoryChart) categoryChart.destroy();
+      categoryChart = new Chart(catCtx, {
+        type: 'bar',
+        data: {
+          labels: catLabels,
+          datasets: [{
+            label: 'Active Work Orders',
+            data: catValues,
+            backgroundColor: catColors,
+            borderRadius: 8
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: { beginAtZero: true, grid: { color: '#e2e8f0' } },
+            x: { grid: { display: false } }
+          }
+        }
+      });
+
+      // Status Donut Chart
+      const statusCtx = document.getElementById('statusChart').getContext('2d');
+      const statusLabels = ['Open', 'In Progress', 'Resolved'];
+      const statusValues = statusLabels.map(s => statusCounts[s] || 0);
+
+      if (statusChart) statusChart.destroy();
+      statusChart = new Chart(statusCtx, {
+        type: 'doughnut',
+        data: {
+          labels: statusLabels,
+          datasets: [{
+            data: statusValues,
+            backgroundColor: ['#f97316', '#0284c7', '#10b981'],
+            borderWidth: 2,
+            borderColor: '#ffffff'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } }
+          }
+        }
+      });
+    }
+
+    // 3. Fetch Issues & Populate Map & Top 10 Table
+    async function fetchIssues() {
+      try {
+        const res = await fetch('/api/issues');
+        allIssues = await res.json();
+        applyMapFilters();
+        renderTopIssuesTable();
+        populateStaffDropdown();
+      } catch (err) {
+        console.error("Error fetching issues:", err);
+      }
+    }
+
+    function applyMapFilters() {
+      if (!markersLayer) return;
+      markersLayer.clearLayers();
+
+      const catFilter = document.getElementById("mapFilterCategory").value;
+      const statusFilter = document.getElementById("mapFilterStatus").value;
+
+      allIssues.forEach(issue => {
+        if (catFilter !== "All" && issue.category !== catFilter) return;
+        if (statusFilter !== "All" && issue.status !== statusFilter) return;
+
+        const color = CATEGORY_COLORS[issue.category] || "#0f766e";
+        const marker = L.circleMarker([issue.latitude, issue.longitude], {
+          radius: issue.priority_score >= 80 ? 10 : 7,
+          fillColor: color,
+          color: '#ffffff',
+          weight: 2,
+          opacity: 1,
+          fillOpacity: 0.88
+        });
+
+        const statusClass = issue.status === 'Resolved' ? 'text-emerald-600 bg-emerald-50' : (issue.status === 'In Progress' ? 'text-blue-600 bg-blue-50' : 'text-amber-600 bg-amber-50');
+        const slaIndicator = issue.sla_breached ? `<span class="text-rose-600 font-bold">⚠️ Overdue</span>` : `<span class="text-emerald-600">Within SLA</span>`;
+
+        const popupContent = `
+          <div class="text-xs p-1 space-y-1 font-sans" style="min-width: 180px;">
+            <div class="flex items-center justify-between font-bold">
+              <span class="font-mono text-teal-700">${issue.ticket_id}</span>
+              <span class="px-1.5 py-0.5 rounded ${statusClass}">${issue.status}</span>
+            </div>
+            <div class="font-bold text-slate-800">${issue.title}</div>
+            <div class="text-slate-500">${issue.category} • ${issue.area}</div>
+            <div class="flex justify-between text-[11px] pt-1 border-t border-slate-200">
+              <span>Merged: <b>${issue.report_count}</b></span>
+              <span>Priority: <b>${issue.priority_score}</b></span>
+            </div>
+            <div class="text-[11px]">${slaIndicator}</div>
+            <button onclick="setTrackId('${issue.ticket_id}')" class="w-full mt-2 py-1 bg-teal-600 text-white rounded font-bold text-[10px]">Track Ticket</button>
+          </div>
+        `;
+        marker.bindPopup(popupContent);
+        markersLayer.addLayer(marker);
+      });
+    }
+
+    function renderTopIssuesTable() {
+      const tbody = document.getElementById("topIssuesTableBody");
+      const top10 = allIssues.slice(0, 10);
+      
+      tbody.innerHTML = top10.map(i => {
+        const slaBadge = i.sla_breached 
+          ? `<span class="px-2 py-0.5 rounded-full bg-rose-100 text-rose-800 font-bold">⚠️ Breached</span>`
+          : `<span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold">Compliant</span>`;
+
+        let priorityBadge = "";
+        if (i.priority_score >= 80) priorityBadge = `<span class="px-2 py-0.5 rounded-full bg-rose-100 text-rose-800 font-bold">${i.priority_score} Critical</span>`;
+        else if (i.priority_score >= 60) priorityBadge = `<span class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 font-bold">${i.priority_score} High</span>`;
+        else if (i.priority_score >= 40) priorityBadge = `<span class="px-2 py-0.5 rounded-full bg-yellow-100 text-yellow-800 font-bold">${i.priority_score} Med</span>`;
+        else priorityBadge = `<span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold">${i.priority_score} Low</span>`;
+
+        return `
+          <tr class="hover:bg-slate-50 transition-colors">
+            <td class="py-3 px-4 font-mono font-bold text-teal-700">${i.ticket_id}</td>
+            <td class="py-3 px-4 font-medium">${i.category}</td>
+            <td class="py-3 px-4 text-slate-500">${i.area}</td>
+            <td class="py-3 px-4 text-center font-bold text-slate-800">${i.report_count}</td>
+            <td class="py-3 px-4 text-center font-bold text-slate-800">${i.upvotes}</td>
+            <td class="py-3 px-4">${priorityBadge}</td>
+            <td class="py-3 px-4 font-semibold">${i.status}</td>
+            <td class="py-3 px-4">${slaBadge}</td>
+            <td class="py-3 px-4 text-right">
+              <button onclick="setTrackId('${i.ticket_id}')" class="px-2.5 py-1 text-[11px] font-bold bg-slate-100 hover:bg-teal-600 hover:text-white rounded-md transition-colors">Track</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // 4. Form Actions & Department Banner
+    function updateDeptBanner() {
+      const cat = document.getElementById("formCategory").value;
+      const info = DEPT_INFO[cat] || DEPT_INFO["Pothole"];
+      document.getElementById("deptBannerIcon").innerText = info.icon;
+      document.getElementById("deptBannerName").innerText = info.name;
+      document.getElementById("deptBannerSla").innerText = info.sla;
+    }
+
+    function onAreaSelect() {
+      const area = document.getElementById("formArea").value;
+      const coords = HOTSPOTS[area];
+      if (coords) {
+        document.getElementById("formLat").value = coords.lat.toFixed(6);
+        document.getElementById("formLon").value = coords.lon.toFixed(6);
+        if (map) map.flyTo([coords.lat, coords.lon], 13);
+      }
+    }
+
+    function updateSeverityBadge(val) {
+      const badge = document.getElementById("severityBadge");
+      const v = parseInt(val);
+      const labels = {
+        1: { text: "Level 1 — Minor Inconvenience (+10 Pts)", cls: "bg-emerald-100 text-emerald-800 border-emerald-200" },
+        2: { text: "Level 2 — Moderate Obstruction (+20 Pts)", cls: "bg-teal-100 text-teal-800 border-teal-200" },
+        3: { text: "Level 3 — Serious Hazard (+30 Pts)", cls: "bg-amber-100 text-amber-800 border-amber-200" },
+        4: { text: "Level 4 — Severe Hazard (+40 Pts)", cls: "bg-orange-100 text-orange-800 border-orange-200" },
+        5: { text: "Level 5 — Critical Danger (+50 Pts)", cls: "bg-rose-100 text-rose-800 border-rose-200" }
+      };
+      badge.className = `text-xs font-bold px-2.5 py-1 rounded-full border ${labels[v].cls}`;
+      badge.innerText = labels[v].text;
+    }
+
+    // Photo input handler
+    function handleFileSelect(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        selectedPhotoBase64 = event.target.result;
+        document.getElementById('uploadPreview').src = selectedPhotoBase64;
+        document.getElementById('uploadPrompt').classList.add('hidden');
+        document.getElementById('uploadPreviewContainer').classList.remove('hidden');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function clearPhoto(e) {
+      if (e) e.stopPropagation();
+      selectedPhotoBase64 = "";
+      document.getElementById('photoInput').value = "";
+      document.getElementById('uploadPrompt').classList.remove('hidden');
+      document.getElementById('uploadPreviewContainer').classList.add('hidden');
+    }
+
+    // Report Submit
+    async function handleReportSubmit(e) {
+      e.preventDefault();
+      const btn = document.getElementById("submitBtn");
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Processing Spatial Duplicates...`;
+
+      const payload = {
+        category: document.getElementById("formCategory").value,
+        title: document.getElementById("formTitle").value,
+        description: document.getElementById("formDescription").value,
+        severity: parseInt(document.getElementById("formSeverity").value),
+        area: document.getElementById("formArea").value,
+        latitude: parseFloat(document.getElementById("formLat").value),
+        longitude: parseFloat(document.getElementById("formLon").value),
+        photo_data: selectedPhotoBase64,
+        photo_name: "evidence"
+      };
+
+      try {
+        const res = await fetch('/api/report', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+
+        if (res.ok) {
+          if (data.status === "merged") {
+            showAlertModal(
+              "🤝 Duplicate Merged into Master Ticket!",
+              data.message,
+              "amber",
+              "fa-solid fa-clone text-amber-500 bg-amber-50"
+            );
+          } else {
+            showAlertModal(
+              "🎉 Master Work Ticket Created!",
+              data.message,
+              "emerald",
+              "fa-solid fa-circle-check text-emerald-500 bg-emerald-50"
+            );
+          }
+          // Reset form
+          document.getElementById("formTitle").value = "";
+          document.getElementById("formDescription").value = "";
+          clearPhoto();
+          // Refresh data
+          fetchStats();
+          fetchIssues();
+          setTrackId(data.ticket_id);
+        } else {
+          alert(data.error || "Submission failed");
+        }
+      } catch (err) {
+        alert("Network error submitting report");
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Submit Civic Grievance`;
+      }
+    }
+
+    // 5. Ticket Tracking & Upvoting
+    function setTrackId(ticketId) {
+      document.getElementById("trackSearchInput").value = ticketId;
+      searchTicket();
+      const target = document.getElementById("track");
+      target.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    async function searchTicket() {
+      const ticketId = document.getElementById("trackSearchInput").value.trim().toUpperCase();
+      if (!ticketId) return;
+
+      try {
+        const res = await fetch(`/api/issues/${ticketId}`);
+        if (!res.ok) {
+          alert(`No ticket found matching ${ticketId}`);
+          return;
+        }
+        const t = await res.json();
+        renderTicketDetail(t);
+      } catch (err) {
+        alert("Error loading ticket details");
+      }
+    }
+
+    let activeTrackedTicket = null;
+
+    function renderTicketDetail(t) {
+      activeTrackedTicket = t;
+      const c = document.getElementById("trackResultContainer");
+      c.classList.remove("hidden");
+
+      document.getElementById("ticketIdBadge").innerText = t.ticket_id;
+      document.getElementById("ticketStatusBadge").innerText = t.status;
+      document.getElementById("ticketTitle").innerText = t.title;
+      document.getElementById("ticketAreaCategory").innerText = `${t.area} • ${t.category}`;
+      document.getElementById("ticketDept").innerText = t.department;
+      document.getElementById("ticketDesc").innerText = t.description || "No description provided.";
+      document.getElementById("ticketCoords").innerText = `${t.latitude.toFixed(6)}, ${t.longitude.toFixed(6)}`;
+      document.getElementById("ticketCreatedAt").innerText = new Date(t.created_at).toLocaleString();
+      document.getElementById("upvoteCountText").innerText = `${t.upvotes} community upvotes`;
+      document.getElementById("ticketPriorityScore").innerText = t.priority_score;
+      document.getElementById("ticketPriorityTier").innerText = t.priority_level;
+      document.getElementById("ticketReportCount").innerText = t.report_count;
+
+      document.getElementById("ticketPriorityFormulaBreakdown").innerText = 
+        `Severity (${t.severity}×10) + Reports (${t.report_count}×5) + Upvotes (${t.upvotes}×2) = ${t.priority_score} pts`;
+
+      // SLA Badge
+      const slaBadge = document.getElementById("ticketSlaBadge");
+      if (t.sla_breached) {
+        slaBadge.className = "px-3 py-1 text-xs font-bold rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/40 animate-pulse";
+        slaBadge.innerText = `⚠️ SLA Breached (>${t.sla_hours}h)`;
+      } else {
+        slaBadge.className = "px-3 py-1 text-xs font-bold rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40";
+        slaBadge.innerText = `Within SLA Target (${t.sla_hours}h)`;
+      }
+
+      // Stepper
+      const s2 = document.getElementById("step2Icon");
+      const s3 = document.getElementById("step3Icon");
+      const s4 = document.getElementById("step4Icon");
+
+      s2.className = "w-10 h-10 mx-auto rounded-full bg-teal-600 text-white flex items-center justify-center font-bold text-sm shadow";
+      s2.innerHTML = '<i class="fa-solid fa-check"></i>';
+
+      if (t.status === "In Progress") {
+        s3.className = "w-10 h-10 mx-auto rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm shadow animate-pulse";
+        s3.innerHTML = '<i class="fa-solid fa-wrench"></i>';
+        s4.className = "w-10 h-10 mx-auto rounded-full bg-slate-200 text-slate-600 flex items-center justify-center font-bold text-sm";
+        s4.innerHTML = '4';
+      } else if (t.status === "Resolved") {
+        s3.className = "w-10 h-10 mx-auto rounded-full bg-teal-600 text-white flex items-center justify-center font-bold text-sm shadow";
+        s3.innerHTML = '<i class="fa-solid fa-check"></i>';
+        s4.className = "w-10 h-10 mx-auto rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-sm shadow";
+        s4.innerHTML = '<i class="fa-solid fa-check-double"></i>';
+      } else {
+        s3.className = "w-10 h-10 mx-auto rounded-full bg-slate-200 text-slate-600 flex items-center justify-center font-bold text-sm";
+        s3.innerHTML = '3';
+        s4.className = "w-10 h-10 mx-auto rounded-full bg-slate-200 text-slate-600 flex items-center justify-center font-bold text-sm";
+        s4.innerHTML = '4';
+      }
+
+      // Image
+      const imgContainer = document.getElementById("ticketImageContainer");
+      if (t.photo_path) {
+        document.getElementById("ticketImage").src = t.photo_path;
+        imgContainer.classList.remove("hidden");
+      } else {
+        imgContainer.classList.add("hidden");
+      }
+    }
+
+    async function handleUpvote() {
+      if (!activeTrackedTicket) return;
+      const btn = document.getElementById("upvoteBtn");
+      btn.disabled = true;
+
+      try {
+        const res = await fetch('/api/upvote', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ticket_id: activeTrackedTicket.ticket_id })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          renderTicketDetail(data.ticket);
+          fetchIssues();
+        }
+      } catch (err) {
+        alert("Upvote failed");
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    // 6. Community Ideas Wall
+    async function fetchSuggestions() {
+      try {
+        const res = await fetch('/api/suggestions');
+        const list = await res.json();
+        const grid = document.getElementById("ideasGrid");
+        
+        grid.innerHTML = list.map(item => `
+          <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
+            <div class="space-y-2">
+              <div class="flex items-center gap-2 text-amber-500 text-xs font-bold uppercase tracking-wider">
+                <i class="fa-solid fa-lightbulb"></i> Civic Proposal
+              </div>
+              <h4 class="text-base font-bold text-slate-900">${item.title}</h4>
+              <p class="text-xs text-slate-600 leading-relaxed">${item.description}</p>
+            </div>
+            <div class="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
+              <span class="font-semibold text-slate-700"><i class="fa-solid fa-user mr-1 text-teal-600"></i> ${item.citizen_name}</span>
+              <span>${new Date(item.created_at).toLocaleDateString()}</span>
+            </div>
+          </div>
+        `).join('');
+      } catch (err) {
+        console.error("Error fetching suggestions:", err);
+      }
+    }
+
+    async function handleSuggestionSubmit(e) {
+      e.preventDefault();
+      const payload = {
+        title: document.getElementById("ideaTitle").value,
+        description: document.getElementById("ideaDesc").value,
+        citizen_name: document.getElementById("ideaAuthor").value
+      };
+
+      try {
+        const res = await fetch('/api/suggestions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          document.getElementById("ideaTitle").value = "";
+          document.getElementById("ideaDesc").value = "";
+          document.getElementById("ideaAuthor").value = "";
+          document.getElementById("ideaFormContainer").classList.add("hidden");
+          fetchSuggestions();
+          alert("Thank you! Your proposal has been posted to the civic wall.");
+        }
+      } catch (err) {
+        alert("Failed to submit proposal");
+      }
+    }
+
+    // 7. Staff Console Modal
+    function openStaffModal() {
+      document.getElementById("staffModal").classList.remove("hidden");
+    }
+
+    function closeStaffModal() {
+      document.getElementById("staffModal").classList.add("hidden");
+      document.getElementById("staffModalError").classList.add("hidden");
+    }
+
+    function populateStaffDropdown() {
+      const select = document.getElementById("staffTicketSelect");
+      select.innerHTML = '<option value="">-- Choose Ticket --</option>' + 
+        allIssues.map(i => `<option value="${i.ticket_id}">${i.ticket_id} — ${i.title.substring(0, 45)} [${i.status}]</option>`).join('');
+    }
+
+    function onStaffTicketSelect() {
+      const tid = document.getElementById("staffTicketSelect").value;
+      const preview = document.getElementById("staffTicketPreview");
+      const issue = allIssues.find(i => i.ticket_id === tid);
+
+      if (issue) {
+        document.getElementById("staffPreviewTitle").innerText = issue.title;
+        document.getElementById("staffPreviewCategory").innerText = `Category: ${issue.category} • Priority: ${issue.priority_score} (${issue.priority_level})`;
+        document.getElementById("staffPreviewArea").innerText = `Zone: ${issue.area} • Current Status: ${issue.status}`;
+        preview.classList.remove("hidden");
+        
+        // Select matching radio
+        const radios = document.getElementsByName("staffStatus");
+        radios.forEach(r => { if (r.value === issue.status) r.checked = true; });
+      } else {
+        preview.classList.add("hidden");
+      }
+    }
+
+    async function handleStaffUpdate(e) {
+      e.preventDefault();
+      const tid = document.getElementById("staffTicketSelect").value;
+      const pwd = document.getElementById("staffPassword").value;
+      const statusRadios = document.getElementsByName("staffStatus");
+      let selectedStatus = "Open";
+      statusRadios.forEach(r => { if (r.checked) selectedStatus = r.value; });
+
+      const errEl = document.getElementById("staffModalError");
+      errEl.classList.add("hidden");
+
+      try {
+        const res = await fetch('/api/status', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ticket_id: tid, status: selectedStatus, password: pwd })
+        });
+        const data = await res.json();
+
+        if (res.ok) {
+          closeStaffModal();
+          alert(`Success: Ticket ${tid} status updated to ${selectedStatus}!`);
+          fetchStats();
+          fetchIssues();
+          if (activeTrackedTicket && activeTrackedTicket.ticket_id === tid) {
+            renderTicketDetail(data.ticket);
+          }
+        } else {
+          errEl.innerText = data.error || "Authentication failed";
+          errEl.classList.remove("hidden");
+        }
+      } catch (err) {
+        errEl.innerText = "Error updating status";
+        errEl.classList.remove("hidden");
+      }
+    }
+
+    // Alert Modal
+    function showAlertModal(title, msg, color, iconClass) {
+      document.getElementById("alertTitle").innerText = title;
+      document.getElementById("alertMessage").innerText = msg;
+      const iconContainer = document.getElementById("alertIcon");
+      iconContainer.className = `w-16 h-16 rounded-full flex items-center justify-center mx-auto text-3xl mb-4 ${iconClass}`;
+      iconContainer.innerHTML = `<i class="${iconClass.split(' ')[0]} ${iconClass.split(' ')[1]}"></i>`;
+      document.getElementById("alertModal").classList.remove("hidden");
+    }
+
+    function closeAlertModal() {
+      document.getElementById("alertModal").classList.add("hidden");
+    }
+
+    // Accordion FAQ Toggle
+    function toggleFaq(num) {
+      const ans = document.getElementById(`faqAnswer${num}`);
+      const icon = document.getElementById(`faqIcon${num}`);
+      ans.classList.toggle('hidden');
+      icon.classList.toggle('rotate-180');
+    }
+  </script>
+
+</body>
+</html>
