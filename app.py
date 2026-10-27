@@ -1,11 +1,11 @@
 """
-NagarMithra — Streamlit Executive Civic Dashboard
-==================================================
+NagarMithra — Mangalagiri Executive Streamlit Dashboard
+========================================================
 Runs on Port 8501 via:
     streamlit run app.py
 
 Provides an alternative interactive data science & municipal management
-dashboard for Greater Hyderabad Municipal Corporation (GHMC).
+dashboard for Mangalagiri, Andhra Pradesh (MTMC).
 """
 
 import os
@@ -37,15 +37,19 @@ from database import (
     DB_PATH
 )
 from logic import (
-    HYDERABAD_HOTSPOTS,
     DEPARTMENT_ROUTING,
     calculate_priority_score,
     generate_ticket_id
 )
+from boundary import (
+    is_inside_mangalagiri,
+    validate_mangalagiri_coordinates,
+    MANGALAGIRI_LOCALITIES
+)
 
 # Page Configuration
 st.set_page_config(
-    page_title="NagarMithra — GHMC Civic Dashboard",
+    page_title="Mangalagiri Civic Dashboard — MTMC",
     page_icon="🏛️",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -60,7 +64,7 @@ st.markdown("""
     .main-header {
         font-size: 2.2rem;
         font-weight: 800;
-        color: #0f172a;
+        color: #0f1f1d;
         margin-bottom: 0.2rem;
     }
     .sub-header {
@@ -69,27 +73,19 @@ st.markdown("""
         font-weight: 600;
         margin-bottom: 1.5rem;
     }
-    .metric-card {
-        background-color: #f8fafc;
-        border: 1px solid #e2e8f0;
-        padding: 1.2rem;
-        border-radius: 0.8rem;
-        text-align: center;
-    }
 </style>
 """, unsafe_allow_html=True)
 
 # Sidebar
-st.sidebar.image("https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Emblem_of_Telangana.svg/1200px-Emblem_of_Telangana.svg.png", width=70)
 st.sidebar.title("NagarMithra")
-st.sidebar.caption("Greater Hyderabad Municipal Corporation (GHMC)")
+st.sidebar.caption("Mangalagiri Civic Issue Reporting Platform • Andhra Pradesh")
 st.sidebar.markdown("---")
 
 view_mode = st.sidebar.radio(
     "Navigation Menu",
     [
         "📊 City Overview & KPIs",
-        "🗺️ Live Hyderabad GIS Map",
+        "🗺️ Live Mangalagiri GIS Map",
         "📋 Work Order Explorer",
         "📝 Submit New Hazard",
         "🛡️ Municipal Staff Console",
@@ -98,21 +94,25 @@ view_mode = st.sidebar.radio(
 )
 
 st.sidebar.markdown("---")
-st.sidebar.info("💡 **Tip:** Full interactive web portal is also available at **http://localhost:5000** via `python server.py`.")
+st.sidebar.info("💡 **Web Portal:** Full Single-Page Web App is running at **http://localhost:5000**.")
 
 
 # -----------------------------------------------------------------------------
 # 1. CITY OVERVIEW & KPIS
 # -----------------------------------------------------------------------------
 if view_mode == "📊 City Overview & KPIs":
-    st.markdown('<div class="main-header">NagarMithra Executive Overview</div>', unsafe_allow_html=True)
-    st.markdown('<div class="sub-header">Every Report Counts • Official Telemetry Dashboard</div>', unsafe_allow_html=True)
+    st.markdown('<div class="main-header">Mangalagiri Municipal Telemetry</div>', unsafe_allow_html=True)
+    st.markdown('<div class="sub-header">"Our Mangalagiri, Our Pride, Our Duty!" • Serving Mangalagiri, Andhra Pradesh</div>', unsafe_allow_html=True)
+
+    # Show custom footer banner artwork at top of dashboard
+    if os.path.exists("frontend/mangalagiri_footer.png"):
+        st.image("frontend/mangalagiri_footer.png", use_container_width=True, caption="Panakala Temple, Weavers Monument, Mangalagiri Station, ACA Stadium, AIIMS Mangalagiri & TTD Amaravati")
 
     stats = get_stats()
     
     col1, col2, col3, col4 = st.columns(4)
     with col1:
-        st.metric("Total Citizen Submissions", stats.get("total_reports", 0), help="Cumulative reports including spatial merges")
+        st.metric("Total Citizen Reports", stats.get("total_reports", 0), help="Cumulative reports including spatial merges")
     with col2:
         st.metric("Master Work Orders", stats.get("master_tickets", 0), help="Unique municipal tickets")
     with col3:
@@ -138,7 +138,7 @@ if view_mode == "📊 City Overview & KPIs":
             st.dataframe(status_counts, use_container_width=True)
 
         st.markdown("---")
-        st.subheader("🔥 Top 10 Critical Priority Hazards")
+        st.subheader("🔥 Top 10 Critical Priority Hazards in Mangalagiri")
         top10 = df.sort_values(by="priority_score", ascending=False).head(10)
         st.dataframe(
             top10[[
@@ -152,9 +152,9 @@ if view_mode == "📊 City Overview & KPIs":
 # -----------------------------------------------------------------------------
 # 2. LIVE GIS MAP
 # -----------------------------------------------------------------------------
-elif view_mode == "🗺️ Live Hyderabad GIS Map":
-    st.markdown('<div class="main-header">Hyderabad Civic Spatial Map</div>', unsafe_allow_html=True)
-    st.markdown('<div class="sub-header">Haversine GPS Pinning & Hotspot Clustering</div>', unsafe_allow_html=True)
+elif view_mode == "🗺️ Live Mangalagiri GIS Map":
+    st.markdown('<div class="main-header">Mangalagiri Civic Spatial Map</div>', unsafe_allow_html=True)
+    st.markdown('<div class="sub-header">Haversine GPS Pinning & Hotspot Clustering • Bounded within Mangalagiri, AP</div>', unsafe_allow_html=True)
 
     issues = get_all_issues()
     if issues:
@@ -172,11 +172,11 @@ elif view_mode == "🗺️ Live Hyderabad GIS Map":
         if status_filter != "All":
             filtered_df = filtered_df[filtered_df['status'] == status_filter]
 
-        st.caption(f"Showing {len(filtered_df)} geo-tagged tickets across Greater Hyderabad:")
+        st.caption(f"Showing {len(filtered_df)} geo-tagged tickets verified inside Mangalagiri, Andhra Pradesh:")
 
-        # Streamlit map requires 'latitude' / 'longitude' columns
+        # Map display
         map_df = filtered_df[['latitude', 'longitude']].rename(columns={'latitude': 'lat', 'longitude': 'lon'})
-        st.map(map_df, zoom=11)
+        st.map(map_df, zoom=13)
 
         st.dataframe(
             filtered_df[['ticket_id', 'category', 'area', 'priority_score', 'status', 'created_at']],
@@ -188,7 +188,7 @@ elif view_mode == "🗺️ Live Hyderabad GIS Map":
 # 3. WORK ORDER EXPLORER
 # -----------------------------------------------------------------------------
 elif view_mode == "📋 Work Order Explorer":
-    st.markdown('<div class="main-header">Work Order Explorer</div>', unsafe_allow_html=True)
+    st.markdown('<div class="main-header">Mangalagiri Work Order Explorer</div>', unsafe_allow_html=True)
     st.markdown('<div class="sub-header">Search, Filter & Inspect Municipal Grievances</div>', unsafe_allow_html=True)
 
     search_id = st.text_input("🔍 Search by Ticket Reference (e.g. NM-1001)", "").strip().upper()
@@ -204,12 +204,12 @@ elif view_mode == "📋 Work Order Explorer":
             c4.metric("SLA Hours", f"{issue['sla_hours']}h")
 
             st.write(f"**Department:** {issue['department']}")
-            st.write(f"**Location:** {issue['area']} ({issue['latitude']:.6f}, {issue['longitude']:.6f})")
+            st.write(f"**Locality:** {issue['area']} ({issue['latitude']:.6f}, {issue['longitude']:.6f})")
             st.write(f"**Description:** {issue['description']}")
             st.write(f"**Corroborated Submissions:** {issue['report_count']} citizens")
             st.write(f"**Community Upvotes:** {issue['upvotes']}")
             if issue['sla_breached']:
-                st.error("⚠️ This ticket has breached its statutory resolution SLA deadline!")
+                st.error("⚠️ This ticket has breached its statutory MTMC resolution SLA deadline!")
             else:
                 st.info("✅ Currently within standard resolution timeframe.")
         else:
@@ -223,9 +223,9 @@ elif view_mode == "📋 Work Order Explorer":
         
         csv_data = df.to_csv(index=False).encode('utf-8')
         st.download_button(
-            "📥 Download Complete Civic CSV Report",
+            "📥 Download Mangalagiri Civic CSV Report",
             csv_data,
-            "nagarmithra_civic_data.csv",
+            "mangalagiri_civic_data.csv",
             "text/csv"
         )
 
@@ -234,21 +234,21 @@ elif view_mode == "📋 Work Order Explorer":
 # 4. SUBMIT NEW HAZARD
 # -----------------------------------------------------------------------------
 elif view_mode == "📝 Submit New Hazard":
-    st.markdown('<div class="main-header">File a Civic Grievance</div>', unsafe_allow_html=True)
-    st.markdown('<div class="sub-header">Instant GPS Routing with Haversine Deduplication (&le; 100m)</div>', unsafe_allow_html=True)
+    st.markdown('<div class="main-header">File a Civic Grievance in Mangalagiri</div>', unsafe_allow_html=True)
+    st.markdown('<div class="sub-header">Mangalagiri Service Boundary Enforced • Haversine Deduplication (&le; 100m)</div>', unsafe_allow_html=True)
 
     with st.form("citizen_report_form"):
         col_a, col_b = st.columns(2)
         with col_a:
             category = st.selectbox("Category", list(DEPARTMENT_ROUTING.keys()))
-            area = st.selectbox("Neighborhood / Zone", list(HYDERABAD_HOTSPOTS.keys()))
+            area = st.selectbox("Mangalagiri Locality / Landmark", list(MANGALAGIRI_LOCALITIES.keys()))
         with col_b:
-            coords = HYDERABAD_HOTSPOTS[area]
+            coords = MANGALAGIRI_LOCALITIES[area]
             lat = st.number_input("Latitude", value=float(coords["lat"]), format="%.6f")
             lon = st.number_input("Longitude", value=float(coords["lon"]), format="%.6f")
 
-        title = st.text_input("Grievance Title *", placeholder="e.g., Overflowing garbage bin outside community park")
-        description = st.text_area("Detailed Description", placeholder="Mention landmarks, duration, and obstruction severity...")
+        title = st.text_input("Grievance Title *", placeholder="e.g., Deep dangerous pothole on Panakala Temple Car Street")
+        description = st.text_area("Detailed Description", placeholder="Mention landmarks, duration, and obstruction severity in Mangalagiri...")
         severity = st.slider("Observed Hazard Severity (1 = Minor, 5 = Critical Danger)", min_value=1, max_value=5, value=3)
 
         submitted = st.form_submit_button("Submit Civic Grievance", use_container_width=True)
@@ -256,6 +256,12 @@ elif view_mode == "📝 Submit New Hazard":
         if submitted:
             if not title:
                 st.error("Please enter a title for the grievance.")
+            elif not is_inside_mangalagiri(lat, lon):
+                st.error(
+                    "❌ **Location Outside Mangalagiri!**\n\n"
+                    "This platform currently accepts civic complaints only within the designated Mangalagiri service area, Andhra Pradesh. "
+                    "The location you selected does not fall within our supported area. Please select a location inside Mangalagiri to continue."
+                )
             else:
                 # Run Haversine spatial duplicate check
                 candidate, distance = find_duplicate_candidate(category, lat, lon, threshold_m=100.0)
@@ -291,7 +297,7 @@ elif view_mode == "📝 Submit New Hazard":
 # -----------------------------------------------------------------------------
 elif view_mode == "🛡️ Municipal Staff Console":
     st.markdown('<div class="main-header">Municipal Staff Console</div>', unsafe_allow_html=True)
-    st.markdown('<div class="sub-header">GHMC Officer Verification & Status Updates</div>', unsafe_allow_html=True)
+    st.markdown('<div class="sub-header">MTMC Officer Verification & Status Updates</div>', unsafe_allow_html=True)
 
     issues = get_all_issues()
     ticket_options = [f"{i['ticket_id']} — {i['title'][:40]} [{i['status']}]" for i in issues]
@@ -318,10 +324,10 @@ elif view_mode == "🛡️ Municipal Staff Console":
 # 6. COMMUNITY IDEAS WALL
 # -----------------------------------------------------------------------------
 elif view_mode == "💡 Community Ideas Wall":
-    st.markdown('<div class="main-header">Community Civic Ideas Wall</div>', unsafe_allow_html=True)
-    st.markdown('<div class="sub-header">Collaborative Citizen Proposals for Hyderabad</div>', unsafe_allow_html=True)
+    st.markdown('<div class="main-header">Mangalagiri Community Ideas Wall</div>', unsafe_allow_html=True)
+    st.markdown('<div class="sub-header">Collaborative Citizen Proposals for Mangalagiri</div>', unsafe_allow_html=True)
 
-    with st.expander("➕ Propose a New Civic Enhancement"):
+    with st.expander("➕ Propose a Civic Improvement for Mangalagiri"):
         with st.form("new_idea_form"):
             idea_title = st.text_input("Proposal Title *")
             idea_desc = st.text_area("Detailed Description *")

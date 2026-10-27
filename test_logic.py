@@ -1,12 +1,13 @@
 """
-Automated Unit Test Suite for NagarMithra Logic
-================================================
-Tests the 5 core business rules:
-1. Haversine distance accuracy (<100m detection)
+Automated Unit Test Suite for NagarMithra / Mangalagiri Logic
+=============================================================
+Tests the core business rules:
+1. Haversine distance accuracy (<100m detection in Mangalagiri)
 2. Spatial duplicate merging for identical categories within 100m
 3. Non-merging for distinct categories at the same coordinates
 4. Dynamic priority score calculation and upper cap (100)
 5. Service Level Agreement (SLA) breach detection engine
+6. Mangalagiri Geographic Boundary Validation (Inside vs Outside)
 """
 
 from datetime import datetime, timezone, timedelta
@@ -16,17 +17,22 @@ from logic import (
     is_sla_breached,
     get_department_info
 )
+from boundary import (
+    is_inside_mangalagiri,
+    validate_mangalagiri_coordinates,
+    MANGALAGIRI_LOCALITIES
+)
 
 
 def test_distance_under_100m():
     """
     Verifies Haversine formula calculates distance between two
-    Banjara Hills coordinates (~35m apart) as strictly under 100 metres.
+    Mangalagiri coordinates (~35m apart) as strictly under 100 metres.
     """
-    # Banjara Hills Road No. 1 coords
-    lat1, lon1 = 17.415600, 78.435000
+    # Panakala Temple Road coords (Mangalagiri)
+    lat1, lon1 = 16.438500, 80.562000
     # Point ~35 metres away along the same road
-    lat2, lon2 = 17.415850, 78.435200
+    lat2, lon2 = 16.438750, 80.562200
 
     dist = haversine_distance(lat1, lon1, lat2, lon2)
     assert dist < 100.0, f"Distance should be under 100m, calculated {dist:.2f}m"
@@ -42,15 +48,15 @@ def test_same_category_nearby_merges():
     existing_ticket = {
         "ticket_id": "NM-1001",
         "category": "Pothole",
-        "latitude": 17.415600,
-        "longitude": 78.435000,
+        "latitude": 16.438500,
+        "longitude": 80.562000,
         "status": "Open",
         "report_count": 1
     }
 
     incoming_category = "Pothole"
-    incoming_lat = 17.415850
-    incoming_lon = 78.435200
+    incoming_lat = 16.438750
+    incoming_lon = 80.562200
 
     dist = haversine_distance(
         existing_ticket["latitude"], existing_ticket["longitude"],
@@ -77,14 +83,14 @@ def test_different_category_does_not_merge():
     existing_ticket = {
         "ticket_id": "NM-1001",
         "category": "Pothole",
-        "latitude": 17.415600,
-        "longitude": 78.435000,
+        "latitude": 16.438500,
+        "longitude": 80.562000,
         "status": "Open"
     }
 
     incoming_category = "Garbage Dump"
-    incoming_lat = 17.415600
-    incoming_lon = 78.435000
+    incoming_lat = 16.438500
+    incoming_lon = 80.562000
 
     dist = haversine_distance(
         existing_ticket["latitude"], existing_ticket["longitude"],
@@ -142,3 +148,41 @@ def test_sla_breach_detection():
     # 3. 50 hours old, SLA = 24h, Resolved -> Not Breached
     t_old_resolved = (now - timedelta(hours=50)).isoformat()
     assert is_sla_breached(t_old_resolved, sla_hours=24, status="Resolved") is False
+
+
+def test_mangalagiri_boundary_inside():
+    """
+    Verifies that all prominent Mangalagiri landmarks and neighborhoods
+    are strictly validated as INSIDE the service boundary.
+    """
+    # Panakala Temple (Historic shrine)
+    assert is_inside_mangalagiri(16.438500, 80.562000) is True
+    # AIIMS Mangalagiri
+    assert is_inside_mangalagiri(16.446800, 80.528500) is True
+    # ACA International Cricket Stadium
+    assert is_inside_mangalagiri(16.441200, 80.551000) is True
+    # Weavers Colony / Market
+    assert is_inside_mangalagiri(16.431000, 80.561500) is True
+    # Chinakakani / NRI Hospital
+    assert is_inside_mangalagiri(16.405500, 80.548000) is True
+
+    valid, msg = validate_mangalagiri_coordinates(16.4350, 80.5580)
+    assert valid is True
+    assert "verified within the Mangalagiri service area" in msg
+
+
+def test_mangalagiri_boundary_outside():
+    """
+    Verifies that locations outside Mangalagiri (e.g. Vijayawada, Guntur,
+    Hyderabad, or outside the Andhra Pradesh boundary) are REJECTED.
+    """
+    # Vijayawada across Krishna River (~16.5062, 80.6480)
+    assert is_inside_mangalagiri(16.506200, 80.648000) is False
+    # Guntur city (~16.3067, 80.4365)
+    assert is_inside_mangalagiri(16.306700, 80.436500) is False
+    # Hyderabad (~17.4156, 78.4350)
+    assert is_inside_mangalagiri(17.415600, 78.435000) is False
+
+    valid, msg = validate_mangalagiri_coordinates(16.5062, 80.6480)
+    assert valid is False
+    assert "Location Outside Mangalagiri" in msg

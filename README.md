@@ -1,7 +1,8 @@
-# NagarMithra — Civic Web Portal
-> **Official Tagline:** *"Every Report Counts"*  
-> **Target Entity:** Greater Hyderabad Municipal Corporation (GHMC) / Urban Civic-Tech  
-> **Design Philosophy:** Clean, transparent, student-explainable architecture with zero hidden complexity, parameterized SQL queries, and a standalone web portal paired with an alternative Streamlit dashboard.
+# MANGALAGIRI CIVIC ISSUE REPORTING PLATFORM
+> **Official Tagline:** *"Our Mangalagiri, Our Pride, Our Duty!"*  
+> **Target Entity:** Mangalagiri-Tadepalli Municipal Corporation (MTMC) / Urban Civic-Tech  
+> **Jurisdiction:** Exclusively serving **Mangalagiri, Andhra Pradesh, India**  
+> **Design Philosophy:** Clean, transparent, student-explainable architecture with zero hidden complexity, parameterized SQL queries, strict Ray-Casting GeoJSON boundary enforcement, and a standalone web portal paired with an alternative Streamlit dashboard.
 
 ---
 
@@ -16,97 +17,103 @@ nagarmithra_project/
 ├── EXPLAIN.md                   # 2-minute viva presentation script & worked examples
 ├── requirements.txt             # Minimal Python requirements
 ├── README.md                    # Project documentation & setup instructions
-├── nagarmithra.db               # Seeded SQLite database
+├── mangalagiri_boundary.geojson # Official Mangalagiri service area GeoJSON polygon
+├── nagarmithra.db               # Seeded SQLite database (100 Mangalagiri records)
+├── boundary.py                  # Ray-casting point-in-polygon boundary validation engine
 ├── logic.py                     # Core algorithms (Routing, Haversine, Priority, SLA)
 ├── database.py                  # SQLite persistence layer (Parameterized SQL, 2 tables)
 ├── server.py                    # Zero-dependency Python REST API & Static Server (Port 5000)
 ├── app.py                       # Streamlit Web Application (Port 8501)
-├── seed.py                      # Demo data generator (100 reports across Hyderabad)
-├── test_logic.py                # Automated pytest suite (5 core logic tests)
+├── seed.py                      # Demo data generator (100 reports across Mangalagiri)
+├── test_logic.py                # Automated pytest suite (7 core logic & boundary tests)
 └── frontend/
-    └── index.html               # Single-Page Civic Web App (Tailwind, Leaflet.js, Chart.js)
+    ├── index.html               # Single-Page Civic Web App (Tailwind, Leaflet.js, Chart.js)
+    └── mangalagiri_footer.png   # Custom panoramic artwork visual foundation for footer
 ```
 
-- **Frontend:** HTML5, Tailwind CSS (via CDN), FontAwesome 6 icons, Plus Jakarta Sans typography, Leaflet.js (OpenStreetMap), Chart.js (analytics).
+- **Frontend:** HTML5, Tailwind CSS (via CDN), FontAwesome 6 icons, Plus Jakarta Sans typography, Leaflet.js (OpenStreetMap with Mangalagiri boundary overlay), Chart.js.
 - **Backend:** Python 3 standard library `http.server.HTTPServer` with custom `SimpleHTTPRequestHandler` (Zero third-party framework overhead, cross-platform UTF-8 safe).
 - **Database:** SQLite 3 (`nagarmithra.db`) with absolute directory path resolution and 100% parameterized SQL (`?` placeholders).
+- **Boundary Engine:** Ray-Casting Point-in-Polygon (PIP) algorithm with fast-path bounding-box pre-filtering.
 - **Testing:** Pytest 9.x with 100% pass rate.
 
 ---
 
-## 2. The 4 Core Algorithms & Mathematical Models
+## 2. The Mangalagiri Service Boundary Requirement
 
-### 2.1 Automated Department Routing & Resolution SLAs
-Maps incoming civic categories directly to their responsible administrative division and statutory resolution deadline:
+### 2.1 Geographic Service Area
+The platform exclusively serves the **Mangalagiri** municipal area in Andhra Pradesh, India:
+- Center: `[16.4350° N, 80.5580° E]`
+- Key localities covered:
+  - **Sri Panakala Lakshmi Narasimha Swamy Temple** (Historic Hill Shrine)
+  - **Mangalagiri Handloom Weavers Colony** (GI Cotton Fabric Heritage)
+  - **AIIMS Mangalagiri Campus** (National Apex Healthcare)
+  - **ACA International Cricket Stadium** (Sports Complex)
+  - **Mangalagiri Railway Station & Kothapet Old Town**
+  - **Chinakakani & NRI General Hospital**
+  - **Navuluru & Atmakur Residential Zones**
+  - **Yerrabalem / Amaravati Bypass Corridor**
+  - **Mangalagiri Eco-Park & Reserve Forest**
 
-| Category | Icon | Assigned Department | SLA Deadline |
+### 2.2 Dual-Layer Boundary Validation
+Boundary validation is strictly enforced on both **client** and **server**:
+1. **Frontend (Leaflet.js):** Clicking or pinning coordinates outside the boundary displays the error modal and disables submission while preserving form inputs.
+2. **Backend (`server.py`):** `POST /api/report` executes `validate_mangalagiri_coordinates(lat, lon)` using `boundary.py`. Any attempt to bypass the frontend returns an HTTP `400 Bad Request` with:
+   ```json
+   {
+     "error": "Location Outside Mangalagiri",
+     "message": "This platform currently accepts civic complaints only within the designated Mangalagiri service area, Andhra Pradesh. The location you selected does not fall within our supported area. Please select a location inside Mangalagiri to continue."
+   }
+   ```
+
+---
+
+## 3. The 4 Core Algorithms & Mathematical Models
+
+### 3.1 Automated MTMC Department Routing & Statutory SLAs
+| Category | Icon | Assigned Municipal Division | SLA Limit |
 |---|---|---|---|
-| **Pothole** | 🕳️ | Roads & Traffic Infrastructure (GHMC) | 48 Hours |
-| **Garbage Dump** | 🗑️ | Sanitation & Solid Waste Management | 24 Hours |
-| **Streetlight Fault** | 💡 | Electricity & Public Lighting (TSSPDCL) | 36 Hours |
-| **Water Leakage** | 🚰 | Water Supply & Drainage Board (HMWSSB) | 24 Hours |
-| **Broken Footpath** | 🚶 | Public Works Department (PWD Walkways) | 72 Hours |
-| **Fallback** | 📌 | General Municipal Administration | 48 Hours |
+| **Pothole** | 🕳️ | MTMC Roads & Traffic Infrastructure Wing | **48 Hours** |
+| **Garbage Dump** | 🗑️ | MTMC Public Health & Sanitation Wing | **24 Hours** |
+| **Streetlight Fault** | 💡 | Electricity & Public Lighting (APCPDCL / MTMC) | **36 Hours** |
+| **Water Leakage** | 🚰 | MTMC Water Works & Drainage Department | **24 Hours** |
+| **Broken Footpath** | 🚶 | MTMC Town Planning & Walkways Wing | **72 Hours** |
+| **Public Infrastructure** | 🏛️ | MTMC Public Works & Civic Assets | **48 Hours** |
+| **Other** | 📋 | MTMC General Grievance Cell | **48 Hours** |
 
-### 2.2 Haversine Spatial Duplicate Detection (<100 Metres)
-Prevents duplicate work orders by calculating the spherical great-circle distance between an incoming report $(lat_1, lon_1)$ and active open tickets $(lat_2, lon_2)$:
+### 3.2 Haversine Spatial Great-Circle Deduplication (<100 Metres)
+$$a = \sin^2\left(\frac{\Delta\phi}{2}\right) + \cos(\text{lat}_1) \cdot \cos(\text{lat}_2) \cdot \sin^2\left(\frac{\Delta\lambda}{2}\right)$$
+$$d = R \cdot 2 \cdot \text{atan2}\left(\sqrt{a}, \sqrt{1 - a}\right) \quad (R = 6,371,000\text{ m})$$
+- If an active ticket of the same category is found within **100 metres**, the report is automatically **merged** into the master ticket, `report_count` increments, and the priority score escalates.
 
-$$\Delta\phi = \text{radians}(lat_2 - lat_1), \quad \Delta\lambda = \text{radians}(lon_2 - lon_1)$$
-$$a = \sin^2\left(\frac{\Delta\phi}{2}\right) + \cos(\text{radians}(lat_1)) \cdot \cos(\text{radians}(lat_2)) \cdot \sin^2\left(\frac{\Delta\lambda}{2}\right)$$
-$$c = 2 \cdot \text{atan2}\left(\sqrt{a}, \sqrt{1 - a}\right)$$
-$$d = R \cdot c \quad (\text{where } R = 6,371,000\text{ metres})$$
-
-- **Merging Condition:** If `category_incoming == category_existing` AND `status != "Resolved"` AND $d \le 100.0\text{ m}$:
-  - The incoming complaint merges into the existing master ticket.
-  - `report_count = report_count + 1`.
-  - The priority score is dynamically recalculated and escalated.
-  - The citizen receives an alert: *"🤝 Duplicate Merged into Master Ticket #NM-XXXX!"*
-- **Unique Condition ($d > 100\text{ m}$ or different category):**
-  - A new master ticket `#NM-XXXX` (random 4-digit ID) is created.
-
-### 2.3 Dynamic Civic Priority Formula (0–100 Scale)
-Combines severity, community corroboration (report volume), and public upvotes:
-
+### 3.3 Dynamic Civic Priority Formula (0–100 Scale)
 $$\text{Raw Score} = (\text{Severity} \times 10) + (\text{Report Count} \times 5) + (\text{Upvotes} \times 2)$$
 $$\text{Priority Score} = \min(100, \max(0, \text{Raw Score}))$$
-
-**Severity Input Scale (1 to 5):**
-- 1 = Minor Inconvenience (+10)
-- 2 = Moderate Obstruction (+20)
-- 3 = Serious Hazard (+30)
-- 4 = Severe Hazard (+40)
-- 5 = Critical Danger (+50)
-
-**Classification Tiers:**
 - **Critical:** $\ge 80$ points (Red badge)
 - **High:** $60 \le \text{Score} < 80$ (Orange badge)
 - **Medium:** $40 \le \text{Score} < 60$ (Yellow badge)
 - **Low:** $< 40$ points (Green badge)
 
-### 2.4 Service Level Agreement (SLA) & Breach Engine
-$$\text{Breached} = \begin{cases} 
-\text{False} & \text{if } \text{Status} = \text{"Resolved"} \\
-\text{True} & \text{if } (\text{Current Time} - \text{Created Time}) > \text{SLA Hours} \\
-\text{False} & \text{otherwise}
-\end{cases}$$
-
-Overdue tickets display an animated ⚠️ SLA Breached indicator on both the public tracking page and the municipal staff console.
+### 3.4 Service Level Agreement (SLA) & Breach Engine
+$$\text{Breached} = (\text{Status} \neq \text{"Resolved"}) \land ((\text{Current Time} - \text{Created Time}) > \text{SLA Hours})$$
+Overdue tickets display an animated **⚠️ SLA Breached** alert.
 
 ---
 
-## 3. Geographic Coordinates & Hotspots (Hyderabad)
+## 4. Custom Footer Artwork Integration
 
-| Hotspot Name | Zone Characteristic | Latitude | Longitude |
-|---|---|---|---|
-| **Banjara Hills** | Commercial & Residential Arterial | 17.415600 | 78.435000 |
-| **Madhapur** | IT Corridor / Hitec City | 17.448300 | 78.391500 |
-| **Gachibowli** | Financial District & Outer Ring Road | 17.440100 | 78.348900 |
-| **Charminar** | High-Density Historic Commercial Core | 17.361600 | 78.474700 |
-| **Kukatpally** | High-Density Residential (KPHB) | 17.494800 | 78.399600 |
+The website footer is built directly upon the supplied panoramic sketch artwork:
+- **Image File:** `frontend/mangalagiri_footer.png`
+- **Features depicted in artwork:** Sri Panakala Lakshmi Narasimha Swamy Temple, Weavers Monument, Mangalagiri Railway Station, ACA Stadium, AIIMS Mangalagiri, Amrita, and TTD Amaravati.
+- **Layered Contact Information:**
+  - Tagline: *"Our Mangalagiri, Our Pride, Our Duty!"*
+  - Civic Support Email: `support.mangalagiri@nagarmithra.org` (clickable `mailto:`)
+  - Citizen Helpline: `08645-230000` (clickable `tel:`)
+  - Emergency Discom: `1912` | Police / Fire: `100 / 101`
 
 ---
 
-## 4. Launchers & Operational Commands
+## 5. Launchers & Operational Commands
 
 ### 1. Launch Full Web Portal (Recommended)
 Double click `run_website.bat` OR run:
@@ -128,7 +135,7 @@ Double click `run_tests.bat` OR run:
 pytest test_logic.py -v
 ```
 
-### 4. Re-seed Sample Data (100 Hyderabad Records)
+### 4. Re-seed Sample Data (100 Mangalagiri Records)
 ```cmd
 python seed.py
 ```

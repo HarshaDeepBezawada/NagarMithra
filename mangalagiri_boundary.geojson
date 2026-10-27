@@ -1,0 +1,43 @@
+{
+  "type": "FeatureCollection",
+  "name": "Mangalagiri_Civic_Service_Boundary",
+  "crs": {
+    "type": "name",
+    "properties": {
+      "name": "urn:ogc:def:crs:OGC:1.3:CRS84"
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Mangalagiri Civic Service Area",
+        "municipality": "Mangalagiri-Tadepalli Municipal Corporation (MTMC)",
+        "district": "Guntur / Amaravati Capital Region",
+        "state": "Andhra Pradesh",
+        "country": "India"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [80.5300, 16.4750],
+            [80.5500, 16.4780],
+            [80.5700, 16.4720],
+            [80.5880, 16.4550],
+            [80.5950, 16.4380],
+            [80.5900, 16.4220],
+            [80.5800, 16.4080],
+            [80.5650, 16.3980],
+            [80.5450, 16.3980],
+            [80.5280, 16.4050],
+            [80.5150, 16.4200],
+            [80.5150, 16.4450],
+            [80.5200, 16.4650],
+            [80.5300, 16.4750]
+          ]
+        ]
+      }
+    }
+  ]
+}

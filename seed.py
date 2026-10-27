@@ -1,9 +1,9 @@
 """
-NagarMithra — Demo Data Generator
-==================================
+NagarMithra — Mangalagiri Demo Data Generator
+==============================================
 Seeds the SQLite database with 100 realistic civic grievance tickets
-distributed across 5 major Hyderabad zones with varied categories,
-severities, statuses, upvotes, and SLA compliance dates.
+distributed strictly across Mangalagiri, Andhra Pradesh, with varied
+categories, severities, statuses, upvotes, and SLA compliance dates.
 """
 
 import os
@@ -19,72 +19,72 @@ if hasattr(sys.stdout, 'reconfigure'):
         pass
 
 from database import init_db, insert_issue, insert_suggestion, DB_PATH
-from logic import HYDERABAD_HOTSPOTS
+from boundary import MANGALAGIRI_LOCALITIES, is_inside_mangalagiri
 
 SAMPLE_TITLES = {
     "Pothole": [
-        "Deep crater near Road No. 12 junction",
-        "Multiple potholes causing traffic slow-down",
-        "Sunken manhole creating bike hazard",
-        "Asphalt washed away after recent rains",
-        "Large pothole near metro pillar #42",
-        "Damaged road surface outside commercial complex",
-        "Dangerous road depression on flyover exit ramp",
-        "Pothole cluster near school crossing zone"
+        "Deep pothole near Panakala Temple Ghat road",
+        "Multiple road depressions on Weavers Colony main street",
+        "Sunken manhole on Old Town Market road",
+        "Damaged asphalt near Mangalagiri Railway Station junction",
+        "Road erosion on approach road to AIIMS Mangalagiri",
+        "Crater-like pothole outside ACA Stadium entry gate",
+        "Broken road surface on Chinakakani service lane",
+        "Pothole cluster on Yerrabalem Amaravati bypass road"
     ],
     "Garbage Dump": [
-        "Overflowing community garbage dumper",
-        "Illegal commercial waste dumped on roadside",
-        "Uncollected residential garbage bins for 3 days",
-        "Rotting food waste attracting stray cattle",
-        "Construction debris blocking public sidewalk",
-        "Foul smell from uncleared municipal skip",
-        "Open waste heap near local vegetable market",
-        "Plastic and organic waste dumped in vacant plot"
+        "Overflowing municipal bin near Panakala Temple steps",
+        "Commercial packaging waste dumped near Handloom Silk Market",
+        "Uncollected residential waste along Navuluru colony",
+        "Food waste accumulation near Kothapet vegetable market",
+        "Debris blocking footpath near AIIMS Mangalagiri outer gate",
+        "Open trash heap near Chinakakani NRI Hospital junction",
+        "Plastic and organic waste dumped in vacant plot at Atmakur",
+        "Uncleared community garbage dumper near Eco-Park entrance"
     ],
     "Streetlight Fault": [
-        "Complete dark stretch of 6 non-functional poles",
-        "Flickering high-mast lamp near bus shelter",
-        "Exposed wiring hanging from damaged lighting pole",
-        "Streetlights remain ON during broad daylight",
-        "Dark junction posing security risk at night",
-        "Solar streetlamp battery damaged by tree branch",
-        "Unlit pedestrian crossing on main arterial",
-        "Broken glass enclosure on decorative park lamp"
+        "Complete dark stretch of 5 poles on Temple Hill road",
+        "Flickering LED streetlight near Mangalagiri Bus Stand",
+        "Exposed wiring on lighting pole in Weavers Colony",
+        "Non-functional streetlights on AIIMS connector road",
+        "Dark junction near ACA Stadium posing night safety hazard",
+        "Streetlights staying ON during daylight at Navuluru",
+        "Damaged high-mast lamp near Kothapet market circle",
+        "Broken light fixtures on Chinakakani pedestrian overpass"
     ],
     "Water Leakage": [
-        "Drinking water pipeline burst flooding road",
-        "Continuous freshwater leakage from valve joint",
-        "Sub-surface pipe fracture causing water pooling",
-        "Low water pressure and muddy supply in locality",
-        "Damaged public water tap leaking 24/7",
-        "Water supply pipe cracked by excavator digging",
-        "Water logging near residential apartments",
-        "Overhead municipal tank overflow drain clogged"
+        "Drinking water pipeline leak on Temple Car Street",
+        "Burst freshwater pipe flooding Weavers Colony lane",
+        "Sub-surface pipe fracture near Mangalagiri Railway gate",
+        "Muddy municipal water supply reported in Navuluru",
+        "Broken public drinking water tap leaking continuously at Kothapet",
+        "Water pipeline damaged during road work near AIIMS Mangalagiri",
+        "Water logging near Chinakakani residential apartments",
+        "Overflow drain blocked near Yerrabalem bypass"
     ],
     "Broken Footpath": [
-        "Missing paver blocks causing pedestrian trip hazard",
-        "Cracked concrete slab over stormwater drain",
-        "Broken tactile pavers for visually impaired citizens",
-        "Caved-in footpath section near hospital entrance",
-        "Displaced curb stones pushing pedestrians onto road",
-        "Encroached and damaged walkway near metro station",
-        "Slippery algae buildup on broken walkway",
-        "Exposed iron reinforcement on storm-drain slab"
+        "Missing paver blocks on Panakala Temple pilgrimage path",
+        "Cracked concrete walkway slab near Handloom Weavers Bhavan",
+        "Broken footpath tiles outside Mangalagiri Railway Station",
+        "Displaced curb stones forcing pedestrians onto road near AIIMS",
+        "Caved-in walkway section near ACA Stadium north gate",
+        "Damaged pedestrian pathway near Chinakakani commercial hub",
+        "Missing drain slab creating walking hazard in Navuluru",
+        "Broken tactile pavers for visually impaired near Kothapet"
     ]
 }
 
-SAMPLE_SUGGESTIONS = [
-    ("Solar Rooftop Mandate for Commercial Hubs", "GHMC should mandate rooftop solar panels on all commercial buildings in Madhapur and Gachibowli to reduce peak grid stress.", "Vikram Rao"),
-    ("Automated Underground Waste Compactor Bins", "Deploy sensor-enabled hydraulic underground bins in historic Charminar streets to eliminate open visual garbage heaps.", "Fatima Zahra"),
-    ("Dedicated Bicycle Corridors along Metro Corridors", "Create dedicated green-painted cycling tracks beneath the Miyapur-LB Nagar and Nagole-Raidurg metro lines.", "Karthik Reddy"),
-    ("Real-Time Water Leakage Acoustic Sensor Pilot", "Implement IoT acoustic leak noise loggers across HMWSSB water transmission mains to prevent treated water loss.", "Ananya Sharma"),
-    ("Smart LED Dimming System for Residential Colonies", "Introduce automated motion-based dimming for secondary streetlights after 1:00 AM across KPHB and Banjara Hills.", "Suresh Kumar")
+MANGALAGIRI_SUGGESTIONS = [
+    ("Pilgrim Electric Shuttle Service for Panakala Swamy Temple", "Introduce battery-operated eco-shuttles between Mangalagiri Railway Station, Bus Stand, and the hilltop Panakala Temple to ease congestion.", "Sita Ramaiah"),
+    ("Mangalagiri Handloom Heritage Corridor & Display Pavilions", "Create dedicated pedestrianized heritage walking zones with solar streetlights in Weavers Colony to promote Mangalagiri GI cotton textiles.", "Venkateswarlu (Weavers Society)"),
+    ("Automated Solar Streetlighting for AIIMS Connector Roads", "Install smart sensor-based solar lighting along the connector roads between NH-16 and AIIMS Mangalagiri for patient night travel safety.", "Dr. K. Srinivas Rao"),
+    ("Rainwater Harvesting & Recharge Shafts at Mangalagiri Foothills", "Construct contour recharge pits and percolation trenches along Mangalagiri hill reserve to boost groundwater levels across Kothapet and Navuluru.", "Anuradha Devi"),
+    ("Underground Drainage Modernization in Old Town & Kothapet", "Upgrade legacy open drainage canals in Old Mangalagiri into covered RCC box drains to eliminate seasonal flooding and mosquito breeding.", "P. Satyanarayana")
 ]
 
 
 def seed():
-    """Seed 100 realistic tickets and demo suggestions."""
+    """Seed 100 realistic Mangalagiri tickets and civic proposals."""
     if os.path.exists(DB_PATH):
         try:
             os.remove(DB_PATH)
@@ -93,29 +93,33 @@ def seed():
             pass
 
     init_db()
-    print("[INIT] Initialized empty SQLite schema.")
+    print("[INIT] Initialized empty SQLite schema for Mangalagiri.")
 
     now = datetime.now(timezone.utc)
     categories = list(SAMPLE_TITLES.keys())
-    hotspot_names = list(HYDERABAD_HOTSPOTS.keys())
+    localities = list(MANGALAGIRI_LOCALITIES.keys())
     statuses = ["Open", "In Progress", "Resolved"]
-    # 50% Open, 25% In Progress, 25% Resolved
     status_weights = [0.5, 0.25, 0.25]
 
-    for i in range(1, 101):
-        ticket_id = f"NM-{1000 + i}"
+    count = 0
+    while count < 100:
+        ticket_id = f"NM-{1001 + count}"
         cat = random.choice(categories)
         title = random.choice(SAMPLE_TITLES[cat])
-        area = random.choice(hotspot_names)
-        base_coords = HYDERABAD_HOTSPOTS[area]
+        loc_key = random.choice(localities)
+        loc_data = MANGALAGIRI_LOCALITIES[loc_key]
 
-        # Small GPS jitter (+/- 0.005 degrees, ~500m radius around hotspot)
-        lat = round(base_coords["lat"] + random.uniform(-0.0045, 0.0045), 6)
-        lon = round(base_coords["lon"] + random.uniform(-0.0045, 0.0045), 6)
+        # Small GPS jitter (+/- 0.003 degrees, ~300m radius around landmark)
+        lat = round(loc_data["lat"] + random.uniform(-0.003, 0.003), 6)
+        lon = round(loc_data["lon"] + random.uniform(-0.003, 0.003), 6)
+
+        # Strictly verify inside Mangalagiri boundary
+        if not is_inside_mangalagiri(lat, lon):
+            continue
 
         severity = random.randint(1, 5)
         status = random.choices(statuses, weights=status_weights)[0]
-        report_count = random.choices([1, 2, 3, 4, 5, 8], weights=[0.55, 0.20, 0.12, 0.07, 0.04, 0.02])[0]
+        report_count = random.choices([1, 2, 3, 4, 5, 7], weights=[0.55, 0.20, 0.12, 0.07, 0.04, 0.02])[0]
         upvotes = random.randint(0, 35)
 
         # Vary created_at timestamp: from 2 hours ago up to 5 days ago
@@ -123,9 +127,9 @@ def seed():
         created_at = (now - timedelta(hours=hours_ago)).isoformat()
 
         desc = (
-            f"Civic grievance reported near {area} zone. "
-            f"Observed impact on daily traffic and public convenience. "
-            f"Immediate inspection by responsible municipal department requested."
+            f"Civic grievance reported near {loc_key}, Mangalagiri, Andhra Pradesh. "
+            f"Observed impact on local residents and daily commuters. "
+            f"Immediate inspection by Mangalagiri Municipal Corporation (MTMC) requested."
         )
 
         insert_issue(
@@ -134,7 +138,7 @@ def seed():
             title=title,
             description=desc,
             severity=severity,
-            area=area,
+            area=loc_key,
             latitude=lat,
             longitude=lon,
             photo_path="",
@@ -143,13 +147,14 @@ def seed():
             report_count=report_count,
             created_at=created_at
         )
+        count += 1
 
-    print("[SUCCESS] Successfully seeded 100 civic issues across Hyderabad.")
+    print(f"[SUCCESS] Successfully seeded 100 verified civic issues inside Mangalagiri, AP.")
 
-    for title, desc, author in SAMPLE_SUGGESTIONS:
+    for title, desc, author in MANGALAGIRI_SUGGESTIONS:
         insert_suggestion(title, desc, author)
 
-    print(f"[SUCCESS] Seeded {len(SAMPLE_SUGGESTIONS)} community proposals.")
+    print(f"[SUCCESS] Seeded {len(MANGALAGIRI_SUGGESTIONS)} community proposals for Mangalagiri.")
     print("[READY] Database seeding complete.")
 
 

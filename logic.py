@@ -1,62 +1,73 @@
 """
-NagarMithra — Core Algorithmic Engine
-=====================================
-Contains the 4 core mathematical and business algorithms for civic management:
-1. Department Routing & SLA Mapping
-2. Haversine Spatial Great-Circle Distance & Duplicate Detection
+NagarMithra — Mangalagiri Algorithmic Engine
+=============================================
+Contains the 4 core mathematical and business algorithms customized
+exclusively for Mangalagiri, Andhra Pradesh:
+1. MTMC Department Routing & SLA Mapping
+2. Haversine Spatial Great-Circle Distance & Duplicate Detection (<100m)
 3. Dynamic Civic Priority Formula (0-100 scale)
 4. Service Level Agreement (SLA) Compliance & Breach Detection
+5. Strict Mangalagiri Service Boundary Validation
 """
 
 import math
 import random
 from datetime import datetime, timezone, timedelta
+from boundary import (
+    is_inside_mangalagiri,
+    validate_mangalagiri_coordinates,
+    MANGALAGIRI_LOCALITIES
+)
 
 # Earth radius in metres for the Haversine formula
 EARTH_RADIUS_METRES = 6371000.0
 
-# 2.1 Automated Department Routing & SLA Deadlines
+# 2.1 Automated Department Routing & SLA Deadlines (Mangalagiri Municipal Corporation - MTMC)
 DEPARTMENT_ROUTING = {
     "Pothole": {
         "icon": "🕳️",
-        "department": "Roads & Traffic Infrastructure (GHMC)",
+        "department": "MTMC Roads & Traffic Infrastructure Wing",
         "sla_hours": 48
     },
     "Garbage Dump": {
         "icon": "🗑️",
-        "department": "Sanitation & Solid Waste Management",
+        "department": "MTMC Public Health & Sanitation Wing",
         "sla_hours": 24
     },
     "Streetlight Fault": {
         "icon": "💡",
-        "department": "Electricity & Public Lighting (TSSPDCL)",
+        "department": "Electricity & Public Lighting (APCPDCL / MTMC)",
         "sla_hours": 36
     },
     "Water Leakage": {
         "icon": "🚰",
-        "department": "Water Supply & Drainage Board (HMWSSB)",
+        "department": "MTMC Water Works & Drainage Department",
         "sla_hours": 24
     },
     "Broken Footpath": {
         "icon": "🚶",
-        "department": "Public Works Department (PWD Walkways)",
+        "department": "MTMC Town Planning & Walkways Wing",
         "sla_hours": 72
+    },
+    "Public Infrastructure": {
+        "icon": "🏛️",
+        "department": "MTMC Public Works & Civic Assets",
+        "sla_hours": 48
+    },
+    "Other": {
+        "icon": "📋",
+        "department": "MTMC General Grievance Cell",
+        "sla_hours": 48
     }
 }
 
 FALLBACK_DEPARTMENT = {
     "icon": "📌",
-    "department": "General Municipal Administration",
+    "department": "MTMC General Grievance Cell",
     "sla_hours": 48
 }
 
-HYDERABAD_HOTSPOTS = {
-    "Banjara Hills": {"lat": 17.415600, "lon": 78.435000, "zone": "Commercial & Residential Arterial"},
-    "Madhapur": {"lat": 17.448300, "lon": 78.391500, "zone": "IT Corridor / Hitec City"},
-    "Gachibowli": {"lat": 17.440100, "lon": 78.348900, "zone": "Financial District & Outer Ring Road"},
-    "Charminar": {"lat": 17.361600, "lon": 78.474700, "zone": "High-Density Historic Commercial Core"},
-    "Kukatpally": {"lat": 17.494800, "lon": 78.399600, "zone": "High-Density Residential (KPHB)"}
-}
+MANGALAGIRI_HOTSPOTS = MANGALAGIRI_LOCALITIES
 
 
 def get_department_info(category: str) -> dict:
@@ -68,7 +79,7 @@ def haversine_distance(lat1: float, lon1: float, lat2: float, lon2: float) -> fl
     """
     Calculate the great-circle distance between two GPS coordinates in metres
     using the Haversine formula.
-    
+
     Δϕ = radians(lat2 - lat1)
     Δλ = radians(lon2 - lon1)
     a = sin²(Δϕ / 2) + cos(radians(lat1)) * cos(radians(lat2)) * sin²(Δλ / 2)
@@ -91,7 +102,7 @@ def calculate_priority_score(severity: int, report_count: int, upvotes: int) -> 
     Calculate civic priority on a 0-100 scale:
     Raw Score = (Severity * 10) + (Report Count * 5) + (Upvotes * 2)
     Priority Score = min(100, max(0, Raw Score))
-    
+
     Tiers:
     - Critical: >= 80
     - High: 60 <= Score < 80

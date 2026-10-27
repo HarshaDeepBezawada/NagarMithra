@@ -1,13 +1,16 @@
 """
-NagarMithra — Zero-Dependency REST API & Static Web Server
-===========================================================
-Built strictly with Python standard library modules:
-- http.server (HTTPServer, BaseHTTPRequestHandler)
-- urllib.parse
-- json, base64, csv, os, sys, uuid
+NagarMithra — Mangalagiri REST API & Static Web Server
+======================================================
+Zero-dependency Python standard library server (http.server.HTTPServer)
+serving the Mangalagiri Civic Web Portal on Port 5000.
 
-Serves the frontend Single-Page Application and provides all REST endpoints
-at http://localhost:5000.
+Features:
+- Strict Mangalagiri geographic boundary enforcement
+- Haversine spatial duplicate detection (<100m)
+- Dynamic priority scoring (0-100)
+- Statutory MTMC SLA monitoring
+- GeoJSON boundary streaming & location validation endpoints
+- Safe static file delivery (including custom footer artwork)
 """
 
 import os
@@ -17,6 +20,7 @@ import base64
 import csv
 import io
 import mimetypes
+import uuid
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
 
@@ -43,6 +47,12 @@ from database import (
     BASE_DIR
 )
 from logic import generate_ticket_id
+from boundary import (
+    is_inside_mangalagiri,
+    validate_mangalagiri_coordinates,
+    get_boundary_geojson_dict,
+    MANGALAGIRI_LOCALITIES
+)
 
 UPLOAD_DIR = os.path.join(BASE_DIR, "uploads")
 FRONTEND_DIR = os.path.join(BASE_DIR, "frontend")
@@ -54,9 +64,9 @@ ADMIN_PASSCODE = "admin123"
 
 
 class NagarMithraRequestHandler(BaseHTTPRequestHandler):
-    """Custom HTTP Request Handler for the NagarMithra Civic Portal."""
+    """Custom HTTP Request Handler for the Mangalagiri Civic Portal."""
 
-    server_version = "NagarMithra-Server/2.0"
+    server_version = "MangalagiriCivicPortal/2.0"
 
     def _send_json(self, status_code: int, data: dict | list):
         """Send a JSON HTTP response with UTF-8 encoding and CORS headers."""
@@ -110,20 +120,39 @@ class NagarMithraRequestHandler(BaseHTTPRequestHandler):
             self._send_file(index_path, "text/html; charset=utf-8")
             return
 
-        # 2. Uploaded image delivery
+        # 2. Custom Footer Image delivery
+        if path in ["/mangalagiri_footer.png", "/footer.png"]:
+            footer_path = os.path.join(FRONTEND_DIR, "mangalagiri_footer.png")
+            if not os.path.exists(footer_path):
+                footer_path = os.path.join(BASE_DIR, "static", "images", "mangalagiri_footer.png")
+            self._send_file(footer_path, "image/png")
+            return
+
+        # 3. Uploaded image delivery
         if path.startswith("/uploads/"):
             filename = os.path.basename(path)
             file_path = os.path.join(UPLOAD_DIR, filename)
             self._send_file(file_path)
             return
 
-        # 3. GET /api/stats
+        # 4. GET /api/boundary (GeoJSON polygon for Mangalagiri service boundary)
+        if path == "/api/boundary":
+            geojson = get_boundary_geojson_dict()
+            self._send_json(200, geojson)
+            return
+
+        # 5. GET /api/localities (List of verified Mangalagiri landmarks & localities)
+        if path == "/api/localities":
+            self._send_json(200, MANGALAGIRI_LOCALITIES)
+            return
+
+        # 6. GET /api/stats
         if path == "/api/stats":
             stats = get_stats()
             self._send_json(200, stats)
             return
 
-        # 4. GET /api/issues
+        # 7. GET /api/issues
         if path == "/api/issues":
             status_filter = query.get("status", [None])[0]
             cat_filter = query.get("category", [None])[0]
@@ -131,7 +160,7 @@ class NagarMithraRequestHandler(BaseHTTPRequestHandler):
             self._send_json(200, issues)
             return
 
-        # 5. GET /api/issues/<ticket_id>
+        # 8. GET /api/issues/<ticket_id>
         if path.startswith("/api/issues/"):
             ticket_id = path.split("/")[-1].upper()
             issue = get_issue(ticket_id)
@@ -141,13 +170,13 @@ class NagarMithraRequestHandler(BaseHTTPRequestHandler):
                 self._send_json(404, {"error": f"Ticket {ticket_id} not found"})
             return
 
-        # 6. GET /api/suggestions
+        # 9. GET /api/suggestions
         if path == "/api/suggestions":
             suggestions = get_all_suggestions()
             self._send_json(200, suggestions)
             return
 
-        # 7. GET /api/export-csv
+        # 10. GET /api/export-csv
         if path == "/api/export-csv":
             issues = get_all_issues()
             output = io.StringIO()
@@ -168,7 +197,7 @@ class NagarMithraRequestHandler(BaseHTTPRequestHandler):
             csv_bytes = output.getvalue().encode("utf-8")
             self.send_response(200)
             self.send_header("Content-Type", "text/csv; charset=utf-8")
-            self.send_header("Content-Disposition", "attachment; filename=nagarmithra_civic_data.csv")
+            self.send_header("Content-Disposition", "attachment; filename=mangalagiri_civic_data.csv")
             self.send_header("Content-Length", str(len(csv_bytes)))
             self.end_headers()
             self.wfile.write(csv_bytes)
@@ -177,7 +206,7 @@ class NagarMithraRequestHandler(BaseHTTPRequestHandler):
         self._send_json(404, {"error": "Endpoint not found"})
 
     def do_POST(self):
-        """Route POST requests for complaint submission, upvotes, status, suggestions."""
+        """Route POST requests for complaint submission, location checks, upvotes, status."""
         parsed = urlparse(self.path)
         path = parsed.path.rstrip("/")
 
@@ -190,20 +219,55 @@ class NagarMithraRequestHandler(BaseHTTPRequestHandler):
             self._send_json(400, {"error": "Invalid JSON payload"})
             return
 
-        # 1. POST /api/report (Complaint submission with Haversine duplicate check)
+        # 1. POST /api/validate-location (Pre-flight location boundary check)
+        if path == "/api/validate-location":
+            try:
+                lat = float(body.get("latitude"))
+                lon = float(body.get("longitude"))
+            except (TypeError, ValueError):
+                self._send_json(400, {"valid": False, "message": "Invalid latitude or longitude."})
+                return
+
+            is_valid, message = validate_mangalagiri_coordinates(lat, lon)
+            self._send_json(200, {
+                "valid": is_valid,
+                "message": message,
+                "latitude": lat,
+                "longitude": lon
+            })
+            return
+
+        # 2. POST /api/report (Complaint submission with Mangalagiri boundary + Haversine check)
         if path == "/api/report":
             category = body.get("category", "").strip()
             title = body.get("title", "").strip()
             description = body.get("description", "").strip()
             severity = int(body.get("severity", 3))
-            area = body.get("area", "Banjara Hills").strip()
-            lat = float(body.get("latitude", 17.415600))
-            lon = float(body.get("longitude", 78.435000))
+            area = body.get("area", "Panakala Temple Area").strip()
+            
+            try:
+                lat = float(body.get("latitude"))
+                lon = float(body.get("longitude"))
+            except (TypeError, ValueError):
+                self._send_json(400, {"error": "Invalid GPS coordinates."})
+                return
+
             photo_data = body.get("photo_data", "")
             photo_name = body.get("photo_name", "")
 
             if not category or not title:
                 self._send_json(400, {"error": "Category and Title are required"})
+                return
+
+            # CRITICAL REQUIREMENT: Independent Server-Side Boundary Validation
+            is_valid_loc, boundary_msg = validate_mangalagiri_coordinates(lat, lon)
+            if not is_valid_loc:
+                self._send_json(400, {
+                    "error": "Location Outside Mangalagiri",
+                    "message": boundary_msg,
+                    "latitude": lat,
+                    "longitude": lon
+                })
                 return
 
             # Spatial Duplicate Check (<100m threshold, same category, not resolved)
@@ -216,7 +280,7 @@ class NagarMithraRequestHandler(BaseHTTPRequestHandler):
                     "status": "merged",
                     "ticket_id": updated_ticket["ticket_id"],
                     "distance_metres": round(distance, 1),
-                    "message": f"🤝 Duplicate Merged into Master Ticket #{updated_ticket['ticket_id']}! Location is within {round(distance, 1)}m of an existing report. Priority escalated.",
+                    "message": f"🤝 Duplicate Merged into Master Ticket #{updated_ticket['ticket_id']}! Location is within {round(distance, 1)}m of an existing Mangalagiri report. Priority escalated.",
                     "ticket": updated_ticket
                 })
                 return
@@ -256,12 +320,12 @@ class NagarMithraRequestHandler(BaseHTTPRequestHandler):
             self._send_json(201, {
                 "status": "created",
                 "ticket_id": new_ticket["ticket_id"],
-                "message": f"🎉 Master Ticket #{new_ticket['ticket_id']} Created Successfully! SLA Target: {new_ticket['sla_hours']} Hours.",
+                "message": f"🎉 Master Ticket #{new_ticket['ticket_id']} Created Successfully in Mangalagiri! SLA Target: {new_ticket['sla_hours']} Hours.",
                 "ticket": new_ticket
             })
             return
 
-        # 2. POST /api/upvote
+        # 3. POST /api/upvote
         if path == "/api/upvote":
             ticket_id = body.get("ticket_id", "").strip().upper()
             if not ticket_id:
@@ -282,7 +346,7 @@ class NagarMithraRequestHandler(BaseHTTPRequestHandler):
                 self._send_json(404, {"error": f"Ticket {ticket_id} not found"})
             return
 
-        # 3. POST /api/status (Authenticated Staff Console)
+        # 4. POST /api/status (Authenticated Staff Console)
         if path == "/api/status":
             ticket_id = body.get("ticket_id", "").strip().upper()
             new_status = body.get("status", "").strip()
@@ -307,7 +371,7 @@ class NagarMithraRequestHandler(BaseHTTPRequestHandler):
                 self._send_json(404, {"error": f"Ticket {ticket_id} not found"})
             return
 
-        # 4. POST /api/suggestions
+        # 5. POST /api/suggestions
         if path == "/api/suggestions":
             title = body.get("title", "").strip()
             desc = body.get("description", "").strip()
@@ -329,12 +393,13 @@ def run_server(port: int = 5000):
     init_db()
     server_address = ("", port)
     httpd = HTTPServer(server_address, NagarMithraRequestHandler)
-    print("=" * 65)
-    print(f"  NAGARMITHRA CIVIC PORTAL — GHMC HYDERABAD")
+    print("=" * 70)
+    print(f"  MANGALAGIRI CIVIC ISSUE REPORTING PLATFORM — ANDHRA PRADESH")
+    print(f"  Serving Mangalagiri Service Area Exclusively")
     print(f"  Web Portal: http://localhost:{port}")
     print(f"  Admin Passcode: {ADMIN_PASSCODE}")
     print(f"  Press Ctrl+C to terminate the server")
-    print("=" * 65)
+    print("=" * 70)
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:
@@ -343,5 +408,4 @@ def run_server(port: int = 5000):
 
 
 if __name__ == "__main__":
-    import uuid
     run_server()

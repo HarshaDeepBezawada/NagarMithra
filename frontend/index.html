@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NagarMithra — Civic Web Portal | GHMC Hyderabad</title>
+  <title>Mangalagiri Civic Issue Reporting Platform — Andhra Pradesh</title>
   
   <!-- Tailwind CSS via CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -31,13 +31,15 @@
             sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
           },
           colors: {
-            civic: {
-              navy: '#0f172a',
-              blue: '#1e3a8a',
+            mangalagiri: {
+              cream: '#faf8f5',
+              dark: '#0f1f1d',
               teal: '#0f766e',
-              emerald: '#10b981',
-              amber: '#f59e0b',
-              crimson: '#ef4444',
+              deepTeal: '#134e4a',
+              gold: '#d97706',
+              lightGold: '#fef3c7',
+              saffron: '#ea580c',
+              border: '#e2e8f0',
             }
           }
         }
@@ -46,70 +48,72 @@
   </script>
 
   <style>
-    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #faf8f5; }
     .glass-nav {
-      background: rgba(15, 23, 42, 0.88);
+      background: rgba(15, 31, 29, 0.92);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
     }
-    .hero-gradient {
-      background: radial-gradient(circle at 20% 30%, rgba(30, 58, 138, 0.5) 0%, transparent 50%),
-                  radial-gradient(circle at 80% 70%, rgba(15, 118, 110, 0.4) 0%, transparent 50%),
-                  linear-gradient(135deg, #0b1120 0%, #0f172a 50%, #111827 100%);
+    .mangalagiri-hero {
+      background: radial-gradient(circle at 15% 25%, rgba(15, 118, 110, 0.45) 0%, transparent 50%),
+                  radial-gradient(circle at 85% 75%, rgba(217, 119, 6, 0.35) 0%, transparent 50%),
+                  linear-gradient(135deg, #091514 0%, #0f1f1d 50%, #162e2a 100%);
     }
     .custom-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
     .custom-scroll::-webkit-scrollbar-track { background: #f1f5f9; }
     .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
     .custom-scroll::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-    #map { height: 520px; z-index: 10; }
-    @keyframes pulse-slow {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.85; transform: scale(1.05); }
+    #map { height: 530px; z-index: 10; border-radius: 1rem; }
+    .footer-panoramic {
+      background-image: url('/mangalagiri_footer.png');
+      background-size: cover;
+      background-position: center bottom;
+      background-repeat: no-repeat;
     }
-    .live-pulse { animation: pulse-slow 2.5s infinite; }
   </style>
 </head>
-<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col">
+<body class="text-slate-800 antialiased min-h-screen flex flex-col">
 
   <!-- =========================================================================
-       4.1 STICKY NAVIGATION BAR
+       1. STICKY NAVIGATION BAR
        ========================================================================= -->
-  <header class="sticky top-0 z-50 glass-nav border-b border-slate-800/80 shadow-lg">
+  <header class="sticky top-0 z-50 glass-nav border-b border-teal-900/60 shadow-lg">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-20">
         
         <!-- Brand Logo -->
         <a href="#hero" class="flex items-center gap-3 group">
-          <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-teal-500 to-blue-600 flex items-center justify-center text-white shadow-md shadow-teal-500/20 group-hover:scale-105 transition-transform">
-            <i class="fa-solid fa-landmark text-xl"></i>
+          <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-teal-500 to-amber-500 flex items-center justify-center text-white shadow-md shadow-teal-500/20 group-hover:scale-105 transition-transform">
+            <i class="fa-solid fa-gopuram text-xl"></i>
           </div>
           <div>
             <div class="flex items-center gap-2">
               <span class="text-2xl font-black text-white tracking-tight">Nagar<span class="text-teal-400">Mithra</span></span>
-              <span class="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-1.5">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
-                GHMC Live
+              <span class="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 flex items-center gap-1.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping"></span>
+                Mangalagiri Only
               </span>
             </div>
-            <p class="text-xs text-slate-400 tracking-wide font-medium">Urban Civic Portal • Hyderabad</p>
+            <p class="text-xs text-slate-300 tracking-wide font-medium">Serving Mangalagiri, Andhra Pradesh</p>
           </div>
         </a>
 
         <!-- Desktop Navigation -->
         <nav class="hidden lg:flex items-center gap-1 xl:gap-2">
-          <a href="#hero" class="px-3 py-2 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 rounded-lg transition-colors">Home</a>
-          <a href="#report" class="px-3 py-2 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 rounded-lg transition-colors">Report Hazard</a>
-          <a href="#track" class="px-3 py-2 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 rounded-lg transition-colors">Track Ticket</a>
-          <a href="#map-section" class="px-3 py-2 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 rounded-lg transition-colors">Live Map</a>
-          <a href="#analytics" class="px-3 py-2 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 rounded-lg transition-colors">Analytics</a>
-          <a href="#ideas" class="px-3 py-2 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 rounded-lg transition-colors">Ideas Wall</a>
-          <a href="#departments" class="px-3 py-2 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 rounded-lg transition-colors">Departments</a>
-          <a href="#faq" class="px-3 py-2 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 rounded-lg transition-colors">FAQ</a>
+          <a href="#hero" class="px-3 py-2 text-sm font-medium text-slate-200 hover:text-white hover:bg-slate-800/60 rounded-lg transition-colors">Home</a>
+          <a href="#identity" class="px-3 py-2 text-sm font-medium text-slate-200 hover:text-white hover:bg-slate-800/60 rounded-lg transition-colors">Our Mangalagiri</a>
+          <a href="#report" class="px-3 py-2 text-sm font-medium text-slate-200 hover:text-white hover:bg-slate-800/60 rounded-lg transition-colors">Report Problem</a>
+          <a href="#track" class="px-3 py-2 text-sm font-medium text-slate-200 hover:text-white hover:bg-slate-800/60 rounded-lg transition-colors">Track Ticket</a>
+          <a href="#map-section" class="px-3 py-2 text-sm font-medium text-slate-200 hover:text-white hover:bg-slate-800/60 rounded-lg transition-colors">Live Map</a>
+          <a href="#analytics" class="px-3 py-2 text-sm font-medium text-slate-200 hover:text-white hover:bg-slate-800/60 rounded-lg transition-colors">Analytics</a>
+          <a href="#ideas" class="px-3 py-2 text-sm font-medium text-slate-200 hover:text-white hover:bg-slate-800/60 rounded-lg transition-colors">Ideas Wall</a>
+          <a href="#departments" class="px-3 py-2 text-sm font-medium text-slate-200 hover:text-white hover:bg-slate-800/60 rounded-lg transition-colors">Directory</a>
+          <a href="#faq" class="px-3 py-2 text-sm font-medium text-slate-200 hover:text-white hover:bg-slate-800/60 rounded-lg transition-colors">FAQ</a>
         </nav>
 
         <!-- Staff Console Action -->
         <div class="hidden sm:flex items-center gap-3">
-          <button onclick="openStaffModal()" class="px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-gradient-to-r from-amber-500/20 to-amber-600/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30 transition-all shadow-sm flex items-center gap-2">
+          <button onclick="openStaffModal()" class="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider bg-gradient-to-r from-amber-500/20 to-amber-600/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30 transition-all shadow-sm flex items-center gap-2">
             <i class="fa-solid fa-shield-halved text-amber-400"></i>
             Staff Console
           </button>
@@ -125,14 +129,15 @@
 
     <!-- Mobile Drawer -->
     <div id="mobileMenu" class="hidden lg:hidden bg-slate-900 border-b border-slate-800 px-4 pt-2 pb-6 space-y-2">
-      <a href="#hero" class="block px-3 py-2 text-sm font-medium text-slate-300 hover:text-white rounded-md">Home</a>
-      <a href="#report" class="block px-3 py-2 text-sm font-medium text-slate-300 hover:text-white rounded-md">Report Hazard</a>
-      <a href="#track" class="block px-3 py-2 text-sm font-medium text-slate-300 hover:text-white rounded-md">Track Ticket</a>
-      <a href="#map-section" class="block px-3 py-2 text-sm font-medium text-slate-300 hover:text-white rounded-md">Live Map</a>
-      <a href="#analytics" class="block px-3 py-2 text-sm font-medium text-slate-300 hover:text-white rounded-md">Analytics</a>
-      <a href="#ideas" class="block px-3 py-2 text-sm font-medium text-slate-300 hover:text-white rounded-md">Ideas Wall</a>
-      <a href="#departments" class="block px-3 py-2 text-sm font-medium text-slate-300 hover:text-white rounded-md">Departments</a>
-      <a href="#faq" class="block px-3 py-2 text-sm font-medium text-slate-300 hover:text-white rounded-md">FAQ</a>
+      <a href="#hero" class="block px-3 py-2 text-sm font-medium text-slate-200 hover:text-white rounded-md">Home</a>
+      <a href="#identity" class="block px-3 py-2 text-sm font-medium text-slate-200 hover:text-white rounded-md">Our Mangalagiri</a>
+      <a href="#report" class="block px-3 py-2 text-sm font-medium text-slate-200 hover:text-white rounded-md">Report Problem</a>
+      <a href="#track" class="block px-3 py-2 text-sm font-medium text-slate-200 hover:text-white rounded-md">Track Ticket</a>
+      <a href="#map-section" class="block px-3 py-2 text-sm font-medium text-slate-200 hover:text-white rounded-md">Live Map</a>
+      <a href="#analytics" class="block px-3 py-2 text-sm font-medium text-slate-200 hover:text-white rounded-md">Analytics</a>
+      <a href="#ideas" class="block px-3 py-2 text-sm font-medium text-slate-200 hover:text-white rounded-md">Ideas Wall</a>
+      <a href="#departments" class="block px-3 py-2 text-sm font-medium text-slate-200 hover:text-white rounded-md">Directory</a>
+      <a href="#faq" class="block px-3 py-2 text-sm font-medium text-slate-200 hover:text-white rounded-md">FAQ</a>
       <button onclick="openStaffModal()" class="w-full mt-2 px-4 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/30 flex items-center justify-center gap-2">
         <i class="fa-solid fa-shield-halved"></i> Staff Console
       </button>
@@ -140,74 +145,83 @@
   </header>
 
   <!-- =========================================================================
-       4.2 HERO SECTION & REAL-TIME KPI TILES
+       2. MANGALAGIRI-SPECIFIC HERO SECTION
        ========================================================================= -->
-  <section id="hero" class="hero-gradient text-white pt-16 pb-24 relative overflow-hidden">
+  <section id="hero" class="mangalagiri-hero text-white pt-16 pb-24 relative overflow-hidden">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
       
-      <!-- Top Badge -->
-      <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-teal-500/10 border border-teal-500/30 text-teal-300 text-xs font-semibold mb-6">
-        <i class="fa-solid fa-bullhorn text-teal-400"></i>
-        <span>Greater Hyderabad Municipal Corporation (GHMC) Smart Portal</span>
+      <!-- Service Area Banner -->
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-teal-500/10 border border-teal-500/30 text-teal-300 text-xs font-semibold mb-6">
+        <i class="fa-solid fa-location-dot text-amber-400"></i>
+        <span>Built for Mangalagiri. Driven by Our Community. • Serving Mangalagiri, Andhra Pradesh</span>
       </div>
 
       <div class="grid lg:grid-cols-12 gap-12 items-center">
         <!-- Hero Text -->
         <div class="lg:col-span-7 space-y-6">
           <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight">
-            Every Report Counts. <br>
-            <span class="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 via-emerald-300 to-cyan-400">
-              One Unified Civic Portal.
+            A Better Mangalagiri <br>
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-teal-300 via-amber-200 to-emerald-300">
+              Starts With You.
             </span>
           </h1>
-          <p class="text-lg text-slate-300 max-w-2xl font-normal leading-relaxed">
-            Report infrastructure hazards across Hyderabad with instant GPS precision. Our automated Haversine engine merges spatial duplicates, computes transparent civic priority scores, and binds civic departments to statutory SLAs.
+          <p class="text-lg text-slate-200 max-w-2xl font-normal leading-relaxed">
+            Report local civic problems, share accurate information, and help build a cleaner, safer, and better-connected Mangalagiri.
           </p>
+
+          <!-- Geographic Notice Pill -->
+          <div class="p-3.5 rounded-xl bg-slate-900/80 border border-amber-500/30 text-xs text-amber-200 flex items-center gap-3">
+            <i class="fa-solid fa-triangle-exclamation text-amber-400 text-base"></i>
+            <div>
+              <span class="font-bold text-white">Mangalagiri Service Boundary Enforced:</span>
+              Complaints are accepted exclusively for locations within the designated Mangalagiri municipal boundary.
+            </div>
+          </div>
 
           <!-- CTAs -->
           <div class="flex flex-wrap gap-4 pt-2">
             <a href="#report" class="px-6 py-3.5 rounded-xl font-bold text-sm bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white shadow-lg shadow-teal-500/25 flex items-center gap-2 transition-all hover:scale-[1.02]">
               <i class="fa-solid fa-triangle-exclamation"></i>
-              Report a Hazard Now
+              Report a Problem
             </a>
-            <a href="#track" class="px-6 py-3.5 rounded-xl font-bold text-sm bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700 text-slate-200 flex items-center gap-2 transition-all">
-              <i class="fa-solid fa-magnifying-glass"></i>
-              Track Existing Ticket
-            </a>
-            <a href="#map-section" class="px-6 py-3.5 rounded-xl font-bold text-sm bg-transparent hover:bg-slate-800/50 border border-slate-700 text-slate-300 flex items-center gap-2 transition-all">
+            <a href="#map-section" class="px-6 py-3.5 rounded-xl font-bold text-sm bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700 text-slate-200 flex items-center gap-2 transition-all">
               <i class="fa-solid fa-map-location-dot text-teal-400"></i>
-              View Live Map
+              Explore Nearby Issues
+            </a>
+            <a href="#track" class="px-6 py-3.5 rounded-xl font-bold text-sm bg-transparent hover:bg-slate-800/50 border border-slate-700 text-slate-300 flex items-center gap-2 transition-all">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              Track Ticket
             </a>
           </div>
         </div>
 
-        <!-- Hero Graphic Pill Card -->
+        <!-- Hero Card (Local Heritage & Telemetry) -->
         <div class="lg:col-span-5">
-          <div class="bg-slate-900/70 border border-slate-800 rounded-2xl p-6 shadow-2xl backdrop-blur-md space-y-4">
+          <div class="bg-slate-900/80 border border-teal-900/60 rounded-2xl p-6 shadow-2xl backdrop-blur-md space-y-4">
             <div class="flex items-center justify-between pb-3 border-b border-slate-800">
-              <span class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
-                <i class="fa-solid fa-satellite text-teal-400"></i> Spatial Engine Telemetry
+              <span class="text-xs font-bold text-amber-300 uppercase tracking-wider flex items-center gap-2">
+                <i class="fa-solid fa-gopuram text-amber-400"></i> Mangalagiri Municipal Wing
               </span>
-              <span class="text-xs text-emerald-400 font-semibold">Active Hyderabad Grid</span>
+              <span class="text-xs text-emerald-400 font-semibold">Active Service Grid</span>
             </div>
 
             <div class="space-y-3">
               <div class="flex items-center justify-between text-xs bg-slate-800/60 p-3 rounded-lg border border-slate-700/50">
-                <span class="text-slate-300"><i class="fa-solid fa-circle-dot text-teal-400 mr-2"></i>Haversine Deduplication Radius</span>
-                <span class="font-mono text-emerald-400 font-bold">&le; 100 Metres</span>
+                <span class="text-slate-300"><i class="fa-solid fa-draw-polygon text-teal-400 mr-2"></i>GeoJSON Boundary Validation</span>
+                <span class="font-mono text-emerald-400 font-bold">Point-in-Polygon (PIP)</span>
               </div>
               <div class="flex items-center justify-between text-xs bg-slate-800/60 p-3 rounded-lg border border-slate-700/50">
-                <span class="text-slate-300"><i class="fa-solid fa-scale-balanced text-amber-400 mr-2"></i>Priority Formulation</span>
-                <span class="font-mono text-amber-300 font-bold">(Sev&times;10) + (Rep&times;5) + (Upv&times;2)</span>
+                <span class="text-slate-300"><i class="fa-solid fa-circle-dot text-amber-400 mr-2"></i>Haversine Deduplication Radius</span>
+                <span class="font-mono text-amber-300 font-bold">&le; 100 Metres</span>
               </div>
               <div class="flex items-center justify-between text-xs bg-slate-800/60 p-3 rounded-lg border border-slate-700/50">
-                <span class="text-slate-300"><i class="fa-solid fa-clock text-rose-400 mr-2"></i>Statutory Resolution SLAs</span>
+                <span class="text-slate-300"><i class="fa-solid fa-clock text-rose-400 mr-2"></i>Statutory MTMC SLAs</span>
                 <span class="font-mono text-rose-300 font-bold">24h – 72h Enforced</span>
               </div>
             </div>
             
             <div class="pt-2 text-[11px] text-slate-400 text-center">
-              Covers Banjara Hills, Madhapur, Gachibowli, Charminar & Kukatpally
+              Covers Panakala Temple, Weavers Colony, AIIMS, ACA Stadium, Chinakakani & Navuluru
             </div>
           </div>
         </div>
@@ -216,10 +230,10 @@
       <!-- 4 Real-Time Metric Tiles -->
       <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mt-14">
         
-        <div class="bg-slate-900/80 border border-slate-800 p-5 rounded-2xl shadow-xl backdrop-blur hover:border-slate-700 transition-all">
+        <div class="bg-slate-900/80 border border-slate-800 p-5 rounded-2xl shadow-xl backdrop-blur hover:border-teal-700/50 transition-all">
           <div class="flex items-center justify-between mb-2">
             <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Reports Filed</span>
-            <div class="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center text-sm">
+            <div class="w-8 h-8 rounded-lg bg-teal-500/10 text-teal-400 flex items-center justify-center text-sm">
               <i class="fa-solid fa-users"></i>
             </div>
           </div>
@@ -227,18 +241,18 @@
           <p class="text-xs text-slate-400 mt-1">Total citizen submissions</p>
         </div>
 
-        <div class="bg-slate-900/80 border border-slate-800 p-5 rounded-2xl shadow-xl backdrop-blur hover:border-slate-700 transition-all">
+        <div class="bg-slate-900/80 border border-slate-800 p-5 rounded-2xl shadow-xl backdrop-blur hover:border-teal-700/50 transition-all">
           <div class="flex items-center justify-between mb-2">
             <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Master Tickets</span>
-            <div class="w-8 h-8 rounded-lg bg-teal-500/10 text-teal-400 flex items-center justify-center text-sm">
+            <div class="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center text-sm">
               <i class="fa-solid fa-ticket"></i>
             </div>
           </div>
-          <div id="statMasterTickets" class="text-3xl sm:text-4xl font-extrabold text-teal-400 font-mono">--</div>
+          <div id="statMasterTickets" class="text-3xl sm:text-4xl font-extrabold text-amber-300 font-mono">--</div>
           <p class="text-xs text-slate-400 mt-1">Distinct municipal work orders</p>
         </div>
 
-        <div class="bg-slate-900/80 border border-slate-800 p-5 rounded-2xl shadow-xl backdrop-blur hover:border-slate-700 transition-all">
+        <div class="bg-slate-900/80 border border-slate-800 p-5 rounded-2xl shadow-xl backdrop-blur hover:border-teal-700/50 transition-all">
           <div class="flex items-center justify-between mb-2">
             <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Resolved</span>
             <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-sm">
@@ -249,14 +263,14 @@
           <p class="text-xs text-slate-400 mt-1">Closed municipal repairs</p>
         </div>
 
-        <div class="bg-slate-900/80 border border-slate-800 p-5 rounded-2xl shadow-xl backdrop-blur hover:border-slate-700 transition-all">
+        <div class="bg-slate-900/80 border border-slate-800 p-5 rounded-2xl shadow-xl backdrop-blur hover:border-teal-700/50 transition-all">
           <div class="flex items-center justify-between mb-2">
             <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">SLA Compliance</span>
-            <div class="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center text-sm">
+            <div class="w-8 h-8 rounded-lg bg-cyan-500/10 text-cyan-400 flex items-center justify-center text-sm">
               <i class="fa-solid fa-stopwatch"></i>
             </div>
           </div>
-          <div id="statSlaCompliance" class="text-3xl sm:text-4xl font-extrabold text-amber-300 font-mono">--%</div>
+          <div id="statSlaCompliance" class="text-3xl sm:text-4xl font-extrabold text-cyan-300 font-mono">--%</div>
           <p class="text-xs text-slate-400 mt-1">On-time statutory resolution</p>
         </div>
 
@@ -266,23 +280,183 @@
   </section>
 
   <!-- =========================================================================
-       4.3 INTERACTIVE LEAFLET.JS MAP SECTION
+       3. LOCAL IDENTITY: "Our Mangalagiri. Our Responsibility."
+       ========================================================================= -->
+  <section id="identity" class="py-16 bg-white border-b border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="text-center max-w-2xl mx-auto mb-12">
+        <span class="text-xs font-bold uppercase tracking-wider text-teal-700 bg-teal-50 px-3 py-1 rounded-full border border-teal-200">
+          Heritage & Civic Stewardship
+        </span>
+        <h2 class="text-3xl font-extrabold text-slate-900 mt-2">Our Mangalagiri. Our Responsibility.</h2>
+        <p class="text-sm text-slate-600 mt-1">
+          From ancient sacred shrines and handloom weaver heritage to premier national institutions, safeguarding our city's infrastructure is our shared duty.
+        </p>
+      </div>
+
+      <!-- Verified Landmarks Grid -->
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+        <!-- Landmark 1: Panakala Temple -->
+        <div class="bg-slate-50 rounded-2xl border border-slate-200 p-6 hover:shadow-lg transition-all group">
+          <div class="w-12 h-12 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform">
+            <i class="fa-solid fa-place-of-worship"></i>
+          </div>
+          <span class="text-[11px] font-bold uppercase tracking-wider text-amber-700">Heritage & Pilgrimage</span>
+          <h3 class="text-lg font-bold text-slate-900 mt-1">Sri Panakala Lakshmi Narasimha Swamy Temple</h3>
+          <p class="text-xs text-slate-600 mt-2 leading-relaxed">
+            Ancient sacred hill temple celebrated for the pot-bellied Narasimha deity who consumes panakam offerings, featuring the majestic 153-ft high 11-storey Raja Gopuram.
+          </p>
+          <div class="mt-4 pt-3 border-t border-slate-200 text-[11px] text-slate-500 font-mono">
+            📍 16.4385° N, 80.5620° E
+          </div>
+        </div>
+
+        <!-- Landmark 2: Weavers Colony -->
+        <div class="bg-slate-50 rounded-2xl border border-slate-200 p-6 hover:shadow-lg transition-all group">
+          <div class="w-12 h-12 rounded-xl bg-teal-500/10 text-teal-600 flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform">
+            <i class="fa-solid fa-shirt"></i>
+          </div>
+          <span class="text-[11px] font-bold uppercase tracking-wider text-teal-700">Artisan & GI Heritage</span>
+          <h3 class="text-lg font-bold text-slate-900 mt-1">Mangalagiri Handloom Weavers Colony</h3>
+          <p class="text-xs text-slate-600 mt-2 leading-relaxed">
+            Historic handloom weaving quarter famous across India for Geographical Indication (GI) tagged pure cotton fabrics and Nizam zari border sarees.
+          </p>
+          <div class="mt-4 pt-3 border-t border-slate-200 text-[11px] text-slate-500 font-mono">
+            📍 16.4310° N, 80.5615° E
+          </div>
+        </div>
+
+        <!-- Landmark 3: AIIMS Mangalagiri -->
+        <div class="bg-slate-50 rounded-2xl border border-slate-200 p-6 hover:shadow-lg transition-all group">
+          <div class="w-12 h-12 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform">
+            <i class="fa-solid fa-hospital"></i>
+          </div>
+          <span class="text-[11px] font-bold uppercase tracking-wider text-blue-700">Apex Healthcare</span>
+          <h3 class="text-lg font-bold text-slate-900 mt-1">AIIMS Mangalagiri Campus</h3>
+          <p class="text-xs text-slate-600 mt-2 leading-relaxed">
+            All India Institute of Medical Sciences — a premier national medical research and superspecialty healthcare hospital serving coastal Andhra Pradesh.
+          </p>
+          <div class="mt-4 pt-3 border-t border-slate-200 text-[11px] text-slate-500 font-mono">
+            📍 16.4468° N, 80.5285° E
+          </div>
+        </div>
+
+        <!-- Landmark 4: ACA Stadium -->
+        <div class="bg-slate-50 rounded-2xl border border-slate-200 p-6 hover:shadow-lg transition-all group">
+          <div class="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform">
+            <i class="fa-solid fa-baseball-bat-ball"></i>
+          </div>
+          <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-700">Sports Infrastructure</span>
+          <h3 class="text-lg font-bold text-slate-900 mt-1">ACA International Cricket Stadium</h3>
+          <p class="text-xs text-slate-600 mt-2 leading-relaxed">
+            Modern international cricket ground of the Andhra Cricket Association with advanced practice facilities and national sporting fixtures.
+          </p>
+          <div class="mt-4 pt-3 border-t border-slate-200 text-[11px] text-slate-500 font-mono">
+            📍 16.4412° N, 80.5510° E
+          </div>
+        </div>
+
+        <!-- Landmark 5: Chinakakani & NRI Hospital -->
+        <div class="bg-slate-50 rounded-2xl border border-slate-200 p-6 hover:shadow-lg transition-all group">
+          <div class="w-12 h-12 rounded-xl bg-purple-500/10 text-purple-600 flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform">
+            <i class="fa-solid fa-notes-medical"></i>
+          </div>
+          <span class="text-[11px] font-bold uppercase tracking-wider text-purple-700">Medical Corridor</span>
+          <h3 class="text-lg font-bold text-slate-900 mt-1">Chinakakani & NRI Medical Center</h3>
+          <p class="text-xs text-slate-600 mt-2 leading-relaxed">
+            Vital healthcare hub along NH-16 connecting southern Mangalagiri with residential townships and specialty emergency trauma care.
+          </p>
+          <div class="mt-4 pt-3 border-t border-slate-200 text-[11px] text-slate-500 font-mono">
+            📍 16.4055° N, 80.5480° E
+          </div>
+        </div>
+
+        <!-- Landmark 6: Eco-Park & Reserve Forest -->
+        <div class="bg-slate-50 rounded-2xl border border-slate-200 p-6 hover:shadow-lg transition-all group">
+          <div class="w-12 h-12 rounded-xl bg-green-500/10 text-green-600 flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform">
+            <i class="fa-solid fa-tree"></i>
+          </div>
+          <span class="text-[11px] font-bold uppercase tracking-wider text-green-700">Ecology & Green Lung</span>
+          <h3 class="text-lg font-bold text-slate-900 mt-1">Mangalagiri Eco-Park & Reserve Forest</h3>
+          <p class="text-xs text-slate-600 mt-2 leading-relaxed">
+            Protected forest trail and biodiversity conservation zone at the eastern foothills providing vital clean air and recreation spaces for citizens.
+          </p>
+          <div class="mt-4 pt-3 border-t border-slate-200 text-[11px] text-slate-500 font-mono">
+            📍 16.4290° N, 80.5750° E
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       4. HOW IT WORKS (3 SIMPLE STEPS)
+       ========================================================================= -->
+  <section class="py-14 bg-slate-100/70 border-b border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-xl mx-auto mb-10">
+        <h3 class="text-2xl font-extrabold text-slate-900">How NagarMithra Works</h3>
+        <p class="text-xs text-slate-500 mt-1">Three simple steps to resolve local civic issues in Mangalagiri</p>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-8">
+        
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 text-center shadow-sm">
+          <div class="w-12 h-12 mx-auto rounded-full bg-teal-600 text-white flex items-center justify-center text-lg font-bold mb-4 shadow">
+            1
+          </div>
+          <h4 class="text-base font-bold text-slate-900">Report</h4>
+          <p class="text-xs text-slate-600 mt-2 leading-relaxed">
+            Describe the civic problem and attach a photo evidence from your camera or gallery.
+          </p>
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 text-center shadow-sm">
+          <div class="w-12 h-12 mx-auto rounded-full bg-amber-500 text-white flex items-center justify-center text-lg font-bold mb-4 shadow">
+            2
+          </div>
+          <h4 class="text-base font-bold text-slate-900">Locate</h4>
+          <p class="text-xs text-slate-600 mt-2 leading-relaxed">
+            Select the exact issue location on the map. The system verifies it falls within the Mangalagiri boundary.
+          </p>
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 text-center shadow-sm">
+          <div class="w-12 h-12 mx-auto rounded-full bg-emerald-600 text-white flex items-center justify-center text-lg font-bold mb-4 shadow">
+            3
+          </div>
+          <h4 class="text-base font-bold text-slate-900">Track</h4>
+          <p class="text-xs text-slate-600 mt-2 leading-relaxed">
+            Use your generated reference number to track resolution milestones and statutory MTMC SLA targets.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       5. SMART MAP & MANGALAGIRI SERVICE BOUNDARY
        ========================================================================= -->
   <section id="map-section" class="py-16 bg-white border-b border-slate-200">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       
       <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
         <div>
-          <span class="text-xs font-bold uppercase tracking-wider text-teal-600 bg-teal-50 px-3 py-1 rounded-full border border-teal-200">
-            Geographic Information System (GIS)
+          <span class="text-xs font-bold uppercase tracking-wider text-teal-700 bg-teal-50 px-3 py-1 rounded-full border border-teal-200">
+            Mangalagiri Geographic Information System (GIS)
           </span>
-          <h2 class="text-3xl font-extrabold text-slate-900 mt-2">Hyderabad Live Civic Map</h2>
-          <p class="text-sm text-slate-500 mt-1">
-            Real-time geospatial visualization of civic grievances across Greater Hyderabad. Click map to pin report coordinates.
+          <h2 class="text-3xl font-extrabold text-slate-900 mt-2">Live Mangalagiri Civic Map</h2>
+          <p class="text-sm text-slate-600 mt-1">
+            Real-time geospatial map bounded by the official Mangalagiri service perimeter. Shaded polygon marks supported area.
           </p>
         </div>
 
-        <!-- Map Controls -->
+        <!-- Controls -->
         <div class="flex flex-wrap items-center gap-3">
           <select id="mapFilterCategory" class="text-xs font-medium bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-teal-500">
             <option value="All">All Categories</option>
@@ -310,15 +484,27 @@
       <div class="bg-white rounded-2xl overflow-hidden shadow-xl border border-slate-200 relative">
         <div id="map"></div>
 
+        <!-- Boundary Status Indicator Ribbon -->
+        <div id="mapBoundaryStatus" class="absolute top-4 left-4 z-[400] bg-white/95 backdrop-blur-md px-3.5 py-2 rounded-xl border border-teal-500/40 shadow-lg text-xs font-semibold text-teal-800 flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-teal-500 animate-pulse"></span>
+          <span>Mangalagiri Boundary Active</span>
+        </div>
+
         <!-- Legend Pill Overlay -->
         <div class="absolute bottom-4 left-4 z-[400] bg-white/95 backdrop-blur-md p-3.5 rounded-xl border border-slate-200 shadow-lg text-xs space-y-2 hidden sm:block">
-          <div class="font-bold text-slate-800 border-b border-slate-200 pb-1">Legend</div>
+          <div class="font-bold text-slate-800 border-b border-slate-200 pb-1 flex items-center justify-between">
+            <span>Map Legend</span>
+            <span class="text-[10px] text-teal-600 font-mono">Mangalagiri, AP</span>
+          </div>
           <div class="grid grid-cols-2 gap-x-4 gap-y-1">
             <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-rose-500 inline-block"></span> Pothole</div>
             <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-emerald-500 inline-block"></span> Garbage Dump</div>
             <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-amber-500 inline-block"></span> Streetlight</div>
             <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-blue-500 inline-block"></span> Water Leak</div>
             <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-purple-500 inline-block"></span> Footpath</div>
+            <div class="flex items-center gap-2 col-span-2 text-teal-700 pt-1 border-t border-slate-100">
+              <span class="w-3 h-3 border-2 border-teal-600 bg-teal-100/50 inline-block rounded-sm"></span> Shaded: Mangalagiri Boundary
+            </div>
           </div>
         </div>
 
@@ -333,35 +519,38 @@
   </section>
 
   <!-- =========================================================================
-       4.4 HAZARD REPORTING ENGINE
+       6. COMPLAINT REPORTING ENGINE WITH MANGALAGIRI BOUNDARY CHECK
        ========================================================================= -->
   <section id="report" class="py-16 bg-slate-50 border-b border-slate-200">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
       
       <div class="text-center max-w-2xl mx-auto mb-10">
-        <span class="text-xs font-bold uppercase tracking-wider text-teal-600 bg-teal-50 px-3 py-1 rounded-full border border-teal-200">
-          Citizen Reporting Portal
+        <span class="text-xs font-bold uppercase tracking-wider text-teal-700 bg-teal-50 px-3 py-1 rounded-full border border-teal-200">
+          Mangalagiri Citizen Portal
         </span>
-        <h2 class="text-3xl font-extrabold text-slate-900 mt-2">Report a Civic Hazard</h2>
-        <p class="text-sm text-slate-500 mt-1">
-          Submit infrastructure issues with photos and GPS coordinates. Duplicate issues within 100 metres are automatically merged to escalate municipal priority.
+        <h2 class="text-3xl font-extrabold text-slate-900 mt-2">Report a Civic Problem</h2>
+        <p class="text-sm text-slate-600 mt-1">
+          Every report counts. Select the problem location inside Mangalagiri. Locations outside the municipal boundary are rejected.
         </p>
       </div>
 
       <div class="bg-white rounded-2xl shadow-xl border border-slate-200 p-6 sm:p-8">
         
-        <!-- Live Routing Preview Banner -->
+        <!-- Live Authority Banner -->
         <div id="deptBanner" class="mb-6 p-4 rounded-xl bg-teal-50 border border-teal-200 text-teal-900 flex items-start gap-4">
           <div class="text-3xl" id="deptBannerIcon">🕳️</div>
           <div class="flex-1">
             <div class="flex items-center justify-between">
               <span class="text-xs font-bold uppercase tracking-wider text-teal-700">Assigned Municipal Authority</span>
-              <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-teal-200/60 text-teal-900 font-mono" id="deptBannerSla">48h SLA Target</span>
+              <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-teal-200/60 text-teal-950 font-mono" id="deptBannerSla">48h SLA Target</span>
             </div>
-            <div class="font-bold text-base mt-0.5" id="deptBannerName">Roads & Traffic Infrastructure (GHMC)</div>
-            <div class="text-xs text-teal-700 mt-0.5">Complaints in this category are automatically routed to municipal repair teams.</div>
+            <div class="font-bold text-base mt-0.5" id="deptBannerName">MTMC Roads & Traffic Infrastructure Wing</div>
+            <div class="text-xs text-teal-700 mt-0.5">Complaints are routed directly to Mangalagiri Municipal Corporation inspection crews.</div>
           </div>
         </div>
+
+        <!-- Live Boundary Verification Alert Banner -->
+        <div id="boundaryAlertBanner" class="mb-6 p-4 rounded-xl hidden transition-all"></div>
 
         <form id="reportForm" onsubmit="handleReportSubmit(event)" class="space-y-6">
           
@@ -369,38 +558,50 @@
             <!-- Category -->
             <div>
               <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Category *</label>
-              <select id="formCategory" onchange="updateDeptBanner()" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-teal-500 font-medium">
-                <option value="Pothole">🕳️ Pothole & Road Hazard</option>
-                <option value="Garbage Dump">🗑️ Garbage Dump & Solid Waste</option>
-                <option value="Streetlight Fault">💡 Streetlight & Electrical Fault</option>
+              <select id="formCategory" onchange="onCategoryChange()" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-teal-500 font-medium">
+                <option value="Pothole">🕳️ Road Damage & Potholes</option>
+                <option value="Garbage Dump">🗑️ Garbage & Solid Waste</option>
+                <option value="Streetlight Fault">💡 Streetlight & Electrical Failures</option>
                 <option value="Water Leakage">🚰 Water Supply & Pipe Leakage</option>
-                <option value="Broken Footpath">🚶 Broken Footpath & Walkway</option>
+                <option value="Broken Footpath">🚶 Broken Footpaths & Walkways</option>
+                <option value="Public Infrastructure">🏛️ Public Infrastructure Damage</option>
+                <option value="Other">📋 Other Civic Problem</option>
               </select>
             </div>
 
-            <!-- Neighborhood Hotspot Dropdown -->
+            <!-- Neighborhood / Landmark in Mangalagiri -->
             <div>
-              <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Neighborhood / Zone *</label>
-              <select id="formArea" onchange="onAreaSelect()" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-teal-500 font-medium">
-                <option value="Banjara Hills">Banjara Hills (Central)</option>
-                <option value="Madhapur">Madhapur (Hitec City / IT Corridor)</option>
-                <option value="Gachibowli">Gachibowli (Financial District)</option>
-                <option value="Charminar">Charminar (Old City / Core)</option>
-                <option value="Kukatpally">Kukatpally (KPHB Colony)</option>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Mangalagiri Locality / Landmark *</label>
+              <select id="formArea" onchange="onLocalitySelect()" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-teal-500 font-medium">
+                <option value="Panakala Temple Area">Sri Panakala Lakshmi Narasimha Swamy Temple</option>
+                <option value="Weavers Colony">Weavers Colony & Handloom Saree Center</option>
+                <option value="AIIMS Mangalagiri">AIIMS Mangalagiri Campus Road</option>
+                <option value="ACA Stadium">ACA International Cricket Stadium</option>
+                <option value="Railway Station / Kothapet">Mangalagiri Railway Station & Kothapet Old Town</option>
+                <option value="Chinakakani / NRI Hospital">Chinakakani & NRI General Hospital</option>
+                <option value="Navuluru / Atmakur">Navuluru & Atmakur Residential Zones</option>
+                <option value="Yerrabalem / Amaravati Bypass">Yerrabalem / Amaravati Gateway</option>
+                <option value="Eco-Park / Reserve Forest">Mangalagiri Eco-Park & Foothills</option>
               </select>
             </div>
           </div>
 
           <!-- Title -->
           <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Complaint Title *</label>
-            <input type="text" id="formTitle" required placeholder="e.g., Deep dangerous pothole opposite City Center Mall" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-teal-500">
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Issue Title *</label>
+            <input type="text" id="formTitle" required placeholder="e.g., Deep dangerous pothole on Panakala Temple Car Street" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-teal-500">
           </div>
 
           <!-- Description -->
           <div>
             <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Detailed Description</label>
-            <textarea id="formDescription" rows="3" placeholder="Provide additional landmark clues, severity observations, or traffic impact details..." class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-teal-500"></textarea>
+            <textarea id="formDescription" rows="3" placeholder="Provide nearby landmarks, duration of issue, or traffic blockage impact in Mangalagiri..." class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-teal-500"></textarea>
+          </div>
+
+          <!-- Mandatory "Other" Custom Description Field (when Other is selected) -->
+          <div id="otherDescriptionContainer" class="hidden">
+            <label class="block text-xs font-bold uppercase tracking-wider text-amber-700 mb-2">Specify Custom Problem Details *</label>
+            <input type="text" id="formOtherDetail" placeholder="Please describe this specific civic issue in detail..." class="w-full bg-amber-50/50 border border-amber-300 rounded-xl px-4 py-3 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500">
           </div>
 
           <!-- Severity Slider (1-5) -->
@@ -421,33 +622,47 @@
             </div>
           </div>
 
-          <!-- GPS Coordinates -->
-          <div class="grid sm:grid-cols-2 gap-4">
-            <div>
-              <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Latitude (GPS) *</label>
-              <input type="number" step="0.000001" id="formLat" required value="17.415600" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm font-mono text-slate-800 focus:outline-none focus:ring-2 focus:ring-teal-500">
+          <!-- GPS Coordinates with Live Validation -->
+          <div class="p-4 rounded-xl border border-slate-200 bg-slate-50/70 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-700">Location Coordinates (Mangalagiri Boundary Enforced)</span>
+              <button type="button" onclick="getCurrentDeviceLocation()" class="text-xs text-teal-700 hover:text-teal-900 font-bold flex items-center gap-1.5">
+                <i class="fa-solid fa-crosshairs text-teal-600"></i> Use My Current Location
+              </button>
             </div>
-            <div>
-              <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Longitude (GPS) *</label>
-              <input type="number" step="0.000001" id="formLon" required value="78.435000" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm font-mono text-slate-800 focus:outline-none focus:ring-2 focus:ring-teal-500">
+            
+            <div class="grid sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-600 mb-1">Latitude *</label>
+                <input type="number" step="0.000001" id="formLat" required value="16.438500" onchange="validateFormCoordinates()" class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2 text-sm font-mono text-slate-800 focus:outline-none focus:ring-2 focus:ring-teal-500">
+              </div>
+              <div>
+                <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-600 mb-1">Longitude *</label>
+                <input type="number" step="0.000001" id="formLon" required value="80.562000" onchange="validateFormCoordinates()" class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2 text-sm font-mono text-slate-800 focus:outline-none focus:ring-2 focus:ring-teal-500">
+              </div>
+            </div>
+
+            <div id="coordStatusText" class="text-xs font-semibold text-emerald-700 flex items-center gap-1.5 pt-1">
+              <i class="fa-solid fa-circle-check text-emerald-600"></i>
+              <span>Location verified within the Mangalagiri service area.</span>
             </div>
           </div>
-          <p class="text-[11px] text-slate-500 italic">
-            <i class="fa-solid fa-circle-info text-teal-600"></i> Tip: You can also click anywhere on the live map above to pin coordinates automatically.
-          </p>
 
-          <!-- Photo Upload (HTML5 FileReader) -->
+          <!-- Photo Upload (Add a Photo of the Problem) -->
           <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Photographic Evidence (Optional)</label>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Add a Photo of the Problem (Optional)</label>
+            <p class="text-xs text-slate-500 mb-2">Take a picture or upload an image from your gallery.</p>
+            
             <div id="dropZone" class="border-2 border-dashed border-slate-300 hover:border-teal-500 rounded-xl p-6 text-center transition-colors bg-slate-50/50 cursor-pointer" onclick="document.getElementById('photoInput').click()">
-              <input type="file" id="photoInput" accept="image/*" class="hidden" onchange="handleFileSelect(event)">
+              <input type="file" id="photoInput" accept="image/*" capture="environment" class="hidden" onchange="handleFileSelect(event)">
               <div id="uploadPrompt" class="space-y-2">
-                <i class="fa-solid fa-cloud-arrow-up text-3xl text-slate-400"></i>
-                <p class="text-sm text-slate-600 font-medium">Click or drag & drop a photo here</p>
-                <p class="text-xs text-slate-400">PNG, JPG, JPEG, WEBP up to 5 MB</p>
+                <i class="fa-solid fa-camera text-3xl text-slate-400"></i>
+                <p class="text-sm text-slate-600 font-medium">Click to take photo or choose from gallery</p>
+                <p class="text-xs text-slate-400">Permitted: PNG, JPG, JPEG, WEBP (Max: 5 MB)</p>
               </div>
               <div id="uploadPreviewContainer" class="hidden flex-col items-center gap-3">
-                <img id="uploadPreview" class="max-h-48 rounded-lg shadow border border-slate-200" alt="Evidence Preview">
+                <img id="uploadPreview" class="max-h-52 rounded-lg shadow border border-slate-200" alt="Problem Photo Preview">
+                <div id="exifGeoNotice" class="text-xs text-slate-500 italic">No GPS location found in this photo. The issue location will use your selected map location.</div>
                 <button type="button" onclick="clearPhoto(event)" class="text-xs text-rose-600 hover:text-rose-700 font-semibold flex items-center gap-1">
                   <i class="fa-solid fa-trash-can"></i> Remove Photo
                 </button>
@@ -456,9 +671,9 @@
           </div>
 
           <!-- Submit Button -->
-          <button type="submit" id="submitBtn" class="w-full py-4 rounded-xl font-bold text-sm bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white shadow-lg shadow-teal-500/25 flex items-center justify-center gap-2 transition-all">
+          <button type="submit" id="submitBtn" class="w-full py-4 rounded-xl font-bold text-sm bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white shadow-lg shadow-teal-500/25 flex items-center justify-center gap-2 transition-all">
             <i class="fa-solid fa-paper-plane"></i>
-            Submit Civic Grievance
+            Submit Civic Grievance to Mangalagiri Municipal Corp
           </button>
 
         </form>
@@ -469,18 +684,18 @@
   </section>
 
   <!-- =========================================================================
-       4.5 LIVE TICKET TRACKER & UPVOTING
+       7. LIVE TICKET TRACKER & CIVIC UPVOTING
        ========================================================================= -->
   <section id="track" class="py-16 bg-white border-b border-slate-200">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
       
       <div class="text-center max-w-2xl mx-auto mb-10">
-        <span class="text-xs font-bold uppercase tracking-wider text-teal-600 bg-teal-50 px-3 py-1 rounded-full border border-teal-200">
+        <span class="text-xs font-bold uppercase tracking-wider text-teal-700 bg-teal-50 px-3 py-1 rounded-full border border-teal-200">
           Transparent Telemetry
         </span>
-        <h2 class="text-3xl font-extrabold text-slate-900 mt-2">Track Ticket & Civic Upvote</h2>
-        <p class="text-sm text-slate-500 mt-1">
-          Enter any 4-digit reference ID (e.g., <code class="bg-slate-100 text-teal-700 font-mono px-1 rounded">NM-1001</code>) to track progress milestones, check SLA compliance, and upvote the issue.
+        <h2 class="text-3xl font-extrabold text-slate-900 mt-2">Track Complaint & Civic Upvote</h2>
+        <p class="text-sm text-slate-600 mt-1">
+          Enter any 4-digit ticket reference ID (e.g., <code class="bg-slate-100 text-teal-700 font-mono px-1 rounded">NM-1001</code>) to track repair progress and upvote the issue.
         </p>
       </div>
 
@@ -491,7 +706,7 @@
             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
               <i class="fa-solid fa-hashtag"></i>
             </div>
-            <input type="text" id="trackSearchInput" placeholder="Enter Ticket Reference (e.g. NM-1001)" class="w-full bg-white border border-slate-300 rounded-xl pl-10 pr-4 py-3 text-sm font-mono uppercase text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500">
+            <input type="text" id="trackSearchInput" placeholder="Enter Reference Number (e.g. NM-1001)" class="w-full bg-white border border-slate-300 rounded-xl pl-10 pr-4 py-3 text-sm font-mono uppercase text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500">
           </div>
           <button onclick="searchTicket()" class="px-6 py-3 rounded-xl font-bold text-sm bg-teal-600 hover:bg-teal-700 text-white shadow transition-all flex items-center justify-center gap-2">
             <i class="fa-solid fa-search"></i>
@@ -501,7 +716,7 @@
 
         <!-- Quick Demo Ticket Pills -->
         <div class="mt-4 flex flex-wrap items-center gap-2 text-xs">
-          <span class="text-slate-400 font-medium">Quick inspect:</span>
+          <span class="text-slate-500 font-medium">Quick inspect:</span>
           <button onclick="setTrackId('NM-1001')" class="px-2.5 py-1 bg-white border border-slate-200 text-slate-700 rounded-md font-mono hover:border-teal-500">NM-1001</button>
           <button onclick="setTrackId('NM-1005')" class="px-2.5 py-1 bg-white border border-slate-200 text-slate-700 rounded-md font-mono hover:border-teal-500">NM-1005</button>
           <button onclick="setTrackId('NM-1012')" class="px-2.5 py-1 bg-white border border-slate-200 text-slate-700 rounded-md font-mono hover:border-teal-500">NM-1012</button>
@@ -509,7 +724,7 @@
         </div>
       </div>
 
-      <!-- Ticket Display Card (Initially Hidden) -->
+      <!-- Ticket Display Card -->
       <div id="trackResultContainer" class="hidden bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
         
         <!-- Header Banner -->
@@ -521,7 +736,7 @@
               <span id="ticketSlaBadge" class="px-3 py-1 text-xs font-bold rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">Within SLA</span>
             </div>
             <h3 id="ticketTitle" class="text-xl font-bold mt-2 text-slate-100">Ticket Title</h3>
-            <p id="ticketAreaCategory" class="text-xs text-slate-400 mt-1">Banjara Hills • Pothole</p>
+            <p id="ticketAreaCategory" class="text-xs text-slate-400 mt-1">Panakala Temple Area • Pothole</p>
           </div>
 
           <!-- Interactive Upvote Button -->
@@ -544,7 +759,7 @@
                 <i class="fa-solid fa-check"></i>
               </div>
               <div class="text-xs font-bold text-slate-800">1. Filed</div>
-              <div class="text-[10px] text-slate-400 hidden sm:block">Citizen Submission</div>
+              <div class="text-[10px] text-slate-500 hidden sm:block">Citizen Submission</div>
             </div>
 
             <div id="step2" class="space-y-2">
@@ -552,7 +767,7 @@
                 <i class="fa-solid fa-check"></i>
               </div>
               <div class="text-xs font-bold text-slate-800">2. Routed</div>
-              <div class="text-[10px] text-slate-400 hidden sm:block">Assigned to Dept</div>
+              <div class="text-[10px] text-slate-500 hidden sm:block">Assigned to MTMC</div>
             </div>
 
             <div id="step3" class="space-y-2">
@@ -560,7 +775,7 @@
                 3
               </div>
               <div class="text-xs font-bold text-slate-800">3. In Progress</div>
-              <div class="text-[10px] text-slate-400 hidden sm:block">Crew Dispatched</div>
+              <div class="text-[10px] text-slate-500 hidden sm:block">Crew Dispatched</div>
             </div>
 
             <div id="step4" class="space-y-2">
@@ -568,7 +783,7 @@
                 4
               </div>
               <div class="text-xs font-bold text-slate-800">4. Resolved</div>
-              <div class="text-[10px] text-slate-400 hidden sm:block">Closed & Verified</div>
+              <div class="text-[10px] text-slate-500 hidden sm:block">Closed & Verified</div>
             </div>
 
           </div>
@@ -579,15 +794,15 @@
           <div class="space-y-4">
             <div>
               <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Responsible Department</span>
-              <p id="ticketDept" class="text-sm font-semibold text-slate-800 mt-0.5">Roads & Traffic Infrastructure (GHMC)</p>
+              <p id="ticketDept" class="text-sm font-semibold text-slate-800 mt-0.5">MTMC Roads & Traffic Infrastructure Wing</p>
             </div>
             <div>
               <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Description</span>
               <p id="ticketDesc" class="text-sm text-slate-600 mt-0.5">Detailed description will appear here...</p>
             </div>
             <div>
-              <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Coordinates</span>
-              <p id="ticketCoords" class="text-xs font-mono text-slate-600 mt-0.5">17.415600, 78.435000</p>
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Mangalagiri GPS Coordinates</span>
+              <p id="ticketCoords" class="text-xs font-mono text-slate-600 mt-0.5">16.438500, 80.562000</p>
             </div>
             <div>
               <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Created Timestamp</span>
@@ -634,19 +849,19 @@
   </section>
 
   <!-- =========================================================================
-       4.6 COMMUNITY IDEAS WALL
+       8. COMMUNITY IDEAS WALL
        ========================================================================= -->
   <section id="ideas" class="py-16 bg-slate-50 border-b border-slate-200">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       
       <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
         <div>
-          <span class="text-xs font-bold uppercase tracking-wider text-teal-600 bg-teal-50 px-3 py-1 rounded-full border border-teal-200">
+          <span class="text-xs font-bold uppercase tracking-wider text-teal-700 bg-teal-50 px-3 py-1 rounded-full border border-teal-200">
             Civic Co-Creation
           </span>
-          <h2 class="text-3xl font-extrabold text-slate-900 mt-2">Community Ideas & Proposals Wall</h2>
-          <p class="text-sm text-slate-500 mt-1">
-            Share progressive civic proposals to make Greater Hyderabad a smarter, cleaner, and more resilient metropolis.
+          <h2 class="text-3xl font-extrabold text-slate-900 mt-2">Community Proposals for Mangalagiri</h2>
+          <p class="text-sm text-slate-600 mt-1">
+            Share progressive civic proposals to make Mangalagiri a cleaner, safer, and heritage-forward city.
           </p>
         </div>
 
@@ -659,12 +874,12 @@
       <!-- New Idea Form Container (Toggled) -->
       <div id="ideaFormContainer" class="hidden mb-8 bg-white p-6 rounded-2xl border border-slate-200 shadow-xl max-w-2xl mx-auto">
         <h3 class="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
-          <i class="fa-solid fa-pen-to-square text-teal-600"></i> Propose a Civic Enhancement
+          <i class="fa-solid fa-pen-to-square text-teal-600"></i> Propose a Civic Improvement for Mangalagiri
         </h3>
         <form onsubmit="handleSuggestionSubmit(event)" class="space-y-4">
           <div>
             <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Proposal Title *</label>
-            <input type="text" id="ideaTitle" required placeholder="e.g., Rainwater Harvesting Mandate for Metro Pillars" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-teal-500">
+            <input type="text" id="ideaTitle" required placeholder="e.g., Pilgrim Battery Shuttles to Hilltop Panakala Temple" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-teal-500">
           </div>
           <div>
             <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Detailed Description *</label>
@@ -672,7 +887,7 @@
           </div>
           <div>
             <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Your Name / Resident Society</label>
-            <input type="text" id="ideaAuthor" placeholder="e.g., Ananya Sharma (or leave blank for Anonymous)" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-teal-500">
+            <input type="text" id="ideaAuthor" placeholder="e.g., Venkateswarlu (or leave blank for Anonymous)" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-teal-500">
           </div>
           <div class="flex justify-end gap-3 pt-2">
             <button type="button" onclick="document.getElementById('ideaFormContainer').classList.add('hidden')" class="px-4 py-2 text-xs font-bold text-slate-600 hover:text-slate-800">Cancel</button>
@@ -690,26 +905,26 @@
   </section>
 
   <!-- =========================================================================
-       4.7 CITY ANALYTICS DASHBOARD
+       9. CITY ANALYTICS DASHBOARD
        ========================================================================= -->
   <section id="analytics" class="py-16 bg-white border-b border-slate-200">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       
       <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
         <div>
-          <span class="text-xs font-bold uppercase tracking-wider text-teal-600 bg-teal-50 px-3 py-1 rounded-full border border-teal-200">
+          <span class="text-xs font-bold uppercase tracking-wider text-teal-700 bg-teal-50 px-3 py-1 rounded-full border border-teal-200">
             Executive Intelligence
           </span>
-          <h2 class="text-3xl font-extrabold text-slate-900 mt-2">Civic Analytics & Priority Ranking</h2>
-          <p class="text-sm text-slate-500 mt-1">
-            Real-time visual breakdown of work orders and the top 10 most critical civic hazards demanding urgent municipal intervention.
+          <h2 class="text-3xl font-extrabold text-slate-900 mt-2">Mangalagiri Civic Analytics</h2>
+          <p class="text-sm text-slate-600 mt-1">
+            Real-time visual breakdown of work orders and the top 10 most critical civic hazards in Mangalagiri.
           </p>
         </div>
 
         <!-- 1-Click CSV Export Button -->
         <a href="/api/export-csv" class="px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-slate-900 hover:bg-slate-800 text-white shadow flex items-center gap-2 self-start md:self-auto transition-all">
           <i class="fa-solid fa-file-csv text-teal-400 text-sm"></i>
-          Export Full Civic CSV
+          Export Mangalagiri CSV
         </a>
       </div>
 
@@ -718,7 +933,7 @@
         <!-- Category Bar Chart -->
         <div class="lg:col-span-7 bg-slate-50 p-6 rounded-2xl border border-slate-200 shadow-sm">
           <h3 class="text-sm font-bold uppercase tracking-wider text-slate-700 mb-4 flex items-center gap-2">
-            <i class="fa-solid fa-chart-column text-teal-600"></i> Issues by Civic Category
+            <i class="fa-solid fa-chart-column text-teal-600"></i> Issues by Category
           </h3>
           <div class="h-64">
             <canvas id="categoryChart"></canvas>
@@ -728,7 +943,7 @@
         <!-- Status Donut Chart -->
         <div class="lg:col-span-5 bg-slate-50 p-6 rounded-2xl border border-slate-200 shadow-sm">
           <h3 class="text-sm font-bold uppercase tracking-wider text-slate-700 mb-4 flex items-center gap-2">
-            <i class="fa-solid fa-chart-pie text-teal-600"></i> Work Order Status Breakdown
+            <i class="fa-solid fa-chart-pie text-teal-600"></i> Status Breakdown
           </h3>
           <div class="h-64 flex items-center justify-center">
             <canvas id="statusChart"></canvas>
@@ -740,7 +955,7 @@
       <div class="bg-white rounded-2xl border border-slate-200 shadow-lg overflow-hidden">
         <div class="p-5 bg-slate-900 text-white flex items-center justify-between">
           <h3 class="text-sm font-bold uppercase tracking-wider flex items-center gap-2">
-            <i class="fa-solid fa-fire text-rose-500"></i> Top 10 Critical Priority Issues (Escalated Queue)
+            <i class="fa-solid fa-fire text-rose-500"></i> Top 10 Critical Priority Issues (Mangalagiri Queue)
           </h3>
           <span class="text-xs text-slate-400 font-mono">Ranked by Priority Score DESC</span>
         </div>
@@ -751,7 +966,7 @@
               <tr>
                 <th class="py-3 px-4">Ticket</th>
                 <th class="py-3 px-4">Category</th>
-                <th class="py-3 px-4">Area</th>
+                <th class="py-3 px-4">Locality</th>
                 <th class="py-3 px-4 text-center">Reports</th>
                 <th class="py-3 px-4 text-center">Upvotes</th>
                 <th class="py-3 px-4">Priority Tier</th>
@@ -771,18 +986,18 @@
   </section>
 
   <!-- =========================================================================
-       4.8 DEPARTMENT DIRECTORY & FAQ
+       10. MUNICIPAL DIRECTORY & FAQ
        ========================================================================= -->
   <section id="departments" class="py-16 bg-slate-50 border-b border-slate-200">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       
       <div class="text-center max-w-2xl mx-auto mb-12">
-        <span class="text-xs font-bold uppercase tracking-wider text-teal-600 bg-teal-50 px-3 py-1 rounded-full border border-teal-200">
-          Emergency Helplines & Governance
+        <span class="text-xs font-bold uppercase tracking-wider text-teal-700 bg-teal-50 px-3 py-1 rounded-full border border-teal-200">
+          Mangalagiri Municipal Helplines
         </span>
-        <h2 class="text-3xl font-extrabold text-slate-900 mt-2">Municipal Department Directory</h2>
-        <p class="text-sm text-slate-500 mt-1">
-          Direct access to the statutory civic divisions of Hyderabad with official emergency contact numbers.
+        <h2 class="text-3xl font-extrabold text-slate-900 mt-2">Department Directory</h2>
+        <p class="text-sm text-slate-600 mt-1">
+          Direct contact information for Mangalagiri Municipal Corporation (MTMC) wings.
         </p>
       </div>
 
@@ -791,11 +1006,11 @@
         <!-- Roads -->
         <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
           <div class="text-3xl mb-3">🕳️</div>
-          <h4 class="text-base font-bold text-slate-900">Roads & Traffic Infrastructure</h4>
-          <p class="text-xs text-slate-500 mt-1">Greater Hyderabad Municipal Corporation (GHMC)</p>
+          <h4 class="text-base font-bold text-slate-900">MTMC Roads & Engineering</h4>
+          <p class="text-xs text-slate-500 mt-1">Mangalagiri Municipal Corporation</p>
           <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-            <span class="text-slate-400 font-semibold">Toll-Free Helpline</span>
-            <a href="tel:18004250014" class="font-mono font-bold text-teal-600 hover:underline">1800-425-0014</a>
+            <span class="text-slate-400 font-semibold">Civic Helpline</span>
+            <a href="tel:08645230000" class="font-mono font-bold text-teal-700 hover:underline">08645-230000</a>
           </div>
           <div class="mt-1 flex items-center justify-between text-xs">
             <span class="text-slate-400 font-semibold">Standard SLA</span>
@@ -806,11 +1021,11 @@
         <!-- Sanitation -->
         <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
           <div class="text-3xl mb-3">🗑️</div>
-          <h4 class="text-base font-bold text-slate-900">Sanitation & Solid Waste</h4>
-          <p class="text-xs text-slate-500 mt-1">GHMC Environmental Services Wing</p>
+          <h4 class="text-base font-bold text-slate-900">Public Health & Sanitation</h4>
+          <p class="text-xs text-slate-500 mt-1">MTMC Solid Waste Management</p>
           <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-            <span class="text-slate-400 font-semibold">Sanitation Control</span>
-            <a href="tel:04021111111" class="font-mono font-bold text-teal-600 hover:underline">040-2111-1111</a>
+            <span class="text-slate-400 font-semibold">Sanitation Cell</span>
+            <a href="tel:08645230101" class="font-mono font-bold text-teal-700 hover:underline">08645-230101</a>
           </div>
           <div class="mt-1 flex items-center justify-between text-xs">
             <span class="text-slate-400 font-semibold">Standard SLA</span>
@@ -821,11 +1036,11 @@
         <!-- Electricity -->
         <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
           <div class="text-3xl mb-3">💡</div>
-          <h4 class="text-base font-bold text-slate-900">Electricity & Streetlights</h4>
-          <p class="text-xs text-slate-500 mt-1">TG Southern Power Distribution (TSSPDCL)</p>
+          <h4 class="text-base font-bold text-slate-900">Electricity & Lighting</h4>
+          <p class="text-xs text-slate-500 mt-1">APCPDCL Mangalagiri Substation</p>
           <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-            <span class="text-slate-400 font-semibold">Power Helpline</span>
-            <a href="tel:1912" class="font-mono font-bold text-teal-600 hover:underline">1912</a>
+            <span class="text-slate-400 font-semibold">Power Faults</span>
+            <a href="tel:1912" class="font-mono font-bold text-teal-700 hover:underline">1912</a>
           </div>
           <div class="mt-1 flex items-center justify-between text-xs">
             <span class="text-slate-400 font-semibold">Standard SLA</span>
@@ -836,11 +1051,11 @@
         <!-- Water -->
         <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
           <div class="text-3xl mb-3">🚰</div>
-          <h4 class="text-base font-bold text-slate-900">Water Supply & Drainage</h4>
-          <p class="text-xs text-slate-500 mt-1">Hyderabad Metro Water Supply (HMWSSB)</p>
+          <h4 class="text-base font-bold text-slate-900">Water Works & Drainage</h4>
+          <p class="text-xs text-slate-500 mt-1">MTMC Water Supply Department</p>
           <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-            <span class="text-slate-400 font-semibold">Customer Care</span>
-            <a href="tel:155313" class="font-mono font-bold text-teal-600 hover:underline">155313</a>
+            <span class="text-slate-400 font-semibold">Water Control</span>
+            <a href="tel:08645230202" class="font-mono font-bold text-teal-700 hover:underline">08645-230202</a>
           </div>
           <div class="mt-1 flex items-center justify-between text-xs">
             <span class="text-slate-400 font-semibold">Standard SLA</span>
@@ -848,14 +1063,14 @@
           </div>
         </div>
 
-        <!-- PWD -->
+        <!-- Town Planning -->
         <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
           <div class="text-3xl mb-3">🚶</div>
-          <h4 class="text-base font-bold text-slate-900">Public Works Department</h4>
-          <p class="text-xs text-slate-500 mt-1">PWD Urban Walkways & Bridges</p>
+          <h4 class="text-base font-bold text-slate-900">Town Planning & Walkways</h4>
+          <p class="text-xs text-slate-500 mt-1">MTMC Footpaths & Encroachments</p>
           <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-            <span class="text-slate-400 font-semibold">Control Room</span>
-            <a href="tel:04023225397" class="font-mono font-bold text-teal-600 hover:underline">040-2322-5397</a>
+            <span class="text-slate-400 font-semibold">Encroachment Cell</span>
+            <a href="tel:08645230303" class="font-mono font-bold text-teal-700 hover:underline">08645-230303</a>
           </div>
           <div class="mt-1 flex items-center justify-between text-xs">
             <span class="text-slate-400 font-semibold">Standard SLA</span>
@@ -866,11 +1081,11 @@
         <!-- Emergency Police/Fire -->
         <div class="bg-gradient-to-br from-rose-50 to-orange-50 p-6 rounded-2xl border border-rose-200 shadow-sm">
           <div class="text-3xl mb-3">🚨</div>
-          <h4 class="text-base font-bold text-rose-900">Emergency & Disaster Management</h4>
-          <p class="text-xs text-rose-700 mt-1">Disaster Response Force (DRF / Dial 100)</p>
+          <h4 class="text-base font-bold text-rose-900">Emergency & Disaster</h4>
+          <p class="text-xs text-rose-700 mt-1">Mangalagiri Police & Fire Station</p>
           <div class="mt-4 pt-3 border-t border-rose-200/60 flex items-center justify-between text-xs">
             <span class="text-rose-700 font-semibold">Emergency Dial</span>
-            <span class="font-mono font-bold text-rose-700">100 / 101</span>
+            <span class="font-mono font-bold text-rose-800">100 / 101</span>
           </div>
           <div class="mt-1 flex items-center justify-between text-xs">
             <span class="text-rose-700 font-semibold">Response Target</span>
@@ -886,33 +1101,31 @@
         
         <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
           <button onclick="toggleFaq(1)" class="w-full flex items-center justify-between text-left font-bold text-sm text-slate-800">
-            <span>How does Haversine spatial duplicate detection work?</span>
+            <span>Why are complaints restricted strictly to Mangalagiri?</span>
             <i id="faqIcon1" class="fa-solid fa-chevron-down text-xs text-slate-400 transition-transform"></i>
           </button>
           <div id="faqAnswer1" class="hidden text-xs text-slate-600 mt-2 leading-relaxed pt-2 border-t border-slate-100">
-            When a citizen reports an issue, the system calculates the great-circle distance between the incoming GPS coordinate and all active tickets of the same category using the Haversine formula. If the distance is &le; 100 metres, it merges the report into the existing master ticket, increments its corroboration count, and raises the priority score instead of spawning redundant work orders.
+            This platform is dedicated exclusively to the Mangalagiri municipal jurisdiction in Andhra Pradesh. By concentrating on this specific service boundary, the municipal administration can enforce rapid statutory response times (24–72 hours) and prevent duplicate work orders across local neighborhoods.
           </div>
         </div>
 
         <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
           <button onclick="toggleFaq(2)" class="w-full flex items-center justify-between text-left font-bold text-sm text-slate-800">
-            <span>How is the Civic Priority Score calculated?</span>
+            <span>How does the Ray-Casting Point-in-Polygon boundary validation work?</span>
             <i id="faqIcon2" class="fa-solid fa-chevron-down text-xs text-slate-400 transition-transform"></i>
           </button>
           <div id="faqAnswer2" class="hidden text-xs text-slate-600 mt-2 leading-relaxed pt-2 border-t border-slate-100">
-            The priority score is computed on a 0–100 scale using the transparent formula: <br>
-            <code class="bg-slate-100 px-1 py-0.5 rounded font-mono text-teal-700 font-semibold">Priority = min(100, (Severity &times; 10) + (Report Count &times; 5) + (Upvotes &times; 2))</code>.<br>
-            Issues scoring &ge; 80 points are automatically classified as Critical, ensuring that high-severity hazards corroborated by multiple citizens receive immediate crew dispatch.
+            When you select a location via map click, search, or GPS, the backend uses an authoritative GeoJSON polygon of Mangalagiri. It casts an imaginary horizontal ray from the coordinate; if the ray intersects an odd number of polygon edges, the point lies safely inside Mangalagiri. Otherwise, submission is blocked with an informative message.
           </div>
         </div>
 
         <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
           <button onclick="toggleFaq(3)" class="w-full flex items-center justify-between text-left font-bold text-sm text-slate-800">
-            <span>What happens when a statutory SLA is breached?</span>
+            <span>How does Haversine spatial duplicate detection work?</span>
             <i id="faqIcon3" class="fa-solid fa-chevron-down text-xs text-slate-400 transition-transform"></i>
           </button>
           <div id="faqAnswer3" class="hidden text-xs text-slate-600 mt-2 leading-relaxed pt-2 border-t border-slate-100">
-            Each category is bound to a strict statutory deadline (24 hours for water leaks/garbage, 36h for streetlights, 48h for potholes, 72h for footpaths). If a ticket remains unresolved past this timeframe, it automatically displays an animated ⚠️ SLA Breached alert on both public tracking and executive consoles.
+            If an active grievance of the same category is reported within 100 metres of an existing ticket, it automatically merges into the master work order, increments its citizen corroboration count, and increases the priority score.
           </div>
         </div>
 
@@ -922,20 +1135,147 @@
   </section>
 
   <!-- =========================================================================
-       4.9 MUNICIPAL STAFF CONSOLE MODAL
+       11. CUSTOM FOOTER WITH SUPPLIED MANGALAGIRI PANORAMIC ARTWORK
        ========================================================================= -->
+  <footer class="mt-auto border-t border-slate-300 bg-white relative">
+    
+    <!-- Visual Image Foundation: Supplied Mangalagiri Panoramic Sketch Artwork -->
+    <div class="relative w-full overflow-hidden bg-slate-100 border-b border-slate-200">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div class="relative rounded-2xl overflow-hidden shadow-md border border-slate-200">
+          <img src="/mangalagiri_footer.png" alt="Our Mangalagiri, Our Pride, Our Duty! Panoramic sketch of Sri Panakala Lakshmi Narasimha Swamy Temple, Weavers Monument, Mangalagiri Railway Station, ACA Stadium, AIIMS Mangalagiri, and TTD Amaravati" class="w-full h-auto object-cover max-h-72">
+          
+          <!-- Subtle Gradient Overlay for layered text contrast -->
+          <div class="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/40 to-transparent flex flex-col justify-end p-6 sm:p-8 text-white">
+            <div class="max-w-2xl">
+              <span class="text-xs font-bold uppercase tracking-widest text-amber-300">Together, Let's Build a Better Mangalagiri</span>
+              <p class="text-xs sm:text-sm text-slate-200 mt-1 leading-relaxed">
+                "Your participation helps us identify local civic problems and work towards a cleaner, safer community."
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact & Meta Information Layer -->
+    <div class="bg-slate-900 text-slate-300 py-10 border-t border-slate-800">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-8 text-xs">
+          
+          <!-- Platform Identity -->
+          <div class="space-y-2">
+            <div class="flex items-center gap-2">
+              <span class="text-lg font-black text-white">Nagar<span class="text-teal-400">Mithra</span></span>
+            </div>
+            <p class="text-slate-400 leading-relaxed">
+              Mangalagiri Civic Issue Reporting Platform. Built exclusively for Mangalagiri, Andhra Pradesh, India.
+            </p>
+            <div class="text-[11px] text-amber-300 font-semibold pt-1">
+              "Our Mangalagiri, Our Pride, Our Duty!"
+            </div>
+          </div>
+
+          <!-- Official Contact Channels -->
+          <div class="space-y-2">
+            <div class="font-bold uppercase tracking-wider text-white">Contact & Support</div>
+            <div>
+              <span class="text-slate-500 block">Civic Support Email:</span>
+              <a href="mailto:support.mangalagiri@nagarmithra.org" class="text-teal-400 hover:underline font-mono">support.mangalagiri@nagarmithra.org</a>
+            </div>
+            <div class="pt-1">
+              <span class="text-slate-500 block">Citizen Helpdesk:</span>
+              <a href="tel:08645230000" class="text-amber-300 hover:underline font-mono font-bold">08645-230000</a>
+            </div>
+          </div>
+
+          <!-- Coverage Zone -->
+          <div class="space-y-2">
+            <div class="font-bold uppercase tracking-wider text-white">Service Boundaries</div>
+            <p class="text-slate-400 leading-relaxed">
+              Serving: Kothapet, Panakala Temple Hill, Weavers Colony, AIIMS Campus, ACA Stadium, Chinakakani, Navuluru, Atmakur & Yerrabalem.
+            </p>
+            <p class="text-[11px] text-rose-300">
+              * Reports outside Mangalagiri are automatically blocked.
+            </p>
+          </div>
+
+          <!-- Emergency & Legal -->
+          <div class="space-y-2">
+            <div class="font-bold uppercase tracking-wider text-white">Municipal Emergency</div>
+            <p class="text-slate-400">Police / Fire / DRF Emergency: <span class="text-rose-400 font-bold font-mono">100 / 101</span></p>
+            <p class="text-slate-400">AP Power Discom: <span class="text-amber-300 font-bold font-mono">1912</span></p>
+            <div class="pt-2 text-[11px] text-slate-500">
+              Academic Project &copy; 2026 • CSE AI Urban Civic-Tech Submission
+            </div>
+          </div>
+
+        </div>
+
+        <div class="pt-6 border-t border-slate-800 text-[11px] text-slate-500 flex flex-col sm:flex-row items-center justify-between gap-2">
+          <div>
+            Mangalagiri Civic Issue Reporting Platform • All Rights Reserved &copy; 2026
+          </div>
+          <div class="flex items-center gap-4">
+            <a href="#hero" class="hover:text-slate-300">Back to Top</a>
+            <span>•</span>
+            <a href="#report" class="hover:text-slate-300">Report Hazard</a>
+            <span>•</span>
+            <a href="#track" class="hover:text-slate-300">Track Issue</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </footer>
+
+  <!-- =========================================================================
+       MODALS: OUTSIDE BOUNDARY ERROR MODAL
+       ========================================================================= -->
+  <div id="outsideBoundaryModal" class="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 text-center border border-rose-200">
+      <div class="w-16 h-16 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto text-3xl mb-4">
+        <i class="fa-solid fa-map-location-dot"></i>
+      </div>
+      <h3 class="text-xl font-extrabold text-slate-900 mb-2">Location Outside Mangalagiri</h3>
+      <p class="text-xs text-slate-600 leading-relaxed mb-6">
+        This platform currently accepts civic complaints only within the designated Mangalagiri service area, Andhra Pradesh. The location you selected does not fall within our supported area. Please select a location inside Mangalagiri to continue.
+      </p>
+      <div class="flex flex-col gap-2">
+        <button onclick="resetToMangalagiriLocation()" class="w-full py-3 rounded-xl font-bold text-xs uppercase tracking-wider bg-teal-600 hover:bg-teal-700 text-white shadow">
+          <i class="fa-solid fa-location-crosshairs mr-1"></i> Select a Location in Mangalagiri
+        </button>
+        <button onclick="closeOutsideBoundaryModal()" class="w-full py-2.5 rounded-xl font-bold text-xs text-slate-600 hover:text-slate-800">
+          Dismiss & Adjust Manually
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- General Alert Response Modal -->
+  <div id="alertModal" class="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 text-center border border-slate-200">
+      <div id="alertIcon" class="w-16 h-16 rounded-full flex items-center justify-center mx-auto text-3xl mb-4"></div>
+      <h3 id="alertTitle" class="text-xl font-extrabold text-slate-900 mb-2">Notice</h3>
+      <p id="alertMessage" class="text-xs text-slate-600 leading-relaxed mb-6"></p>
+      <button onclick="closeAlertModal()" class="w-full py-3 rounded-xl font-bold text-xs uppercase tracking-wider bg-slate-900 hover:bg-slate-800 text-white shadow">
+        Acknowledge & Continue
+      </button>
+    </div>
+  </div>
+
+  <!-- Municipal Staff Console Modal -->
   <div id="staffModal" class="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden border border-slate-200">
       
-      <!-- Modal Header -->
       <div class="bg-slate-900 text-white p-5 flex items-center justify-between">
         <div class="flex items-center gap-2.5">
           <div class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center text-sm">
             <i class="fa-solid fa-shield-halved"></i>
           </div>
           <div>
-            <h3 class="text-base font-bold">Municipal Staff Console</h3>
-            <p class="text-[11px] text-slate-400">GHMC Administrative Work Order Dispatch</p>
+            <h3 class="text-base font-bold">Mangalagiri Staff Console</h3>
+            <p class="text-[11px] text-slate-400">MTMC Municipal Work Order Dispatch</p>
           </div>
         </div>
         <button onclick="closeStaffModal()" class="text-slate-400 hover:text-white text-lg">
@@ -943,11 +1283,9 @@
         </button>
       </div>
 
-      <!-- Modal Body -->
       <form onsubmit="handleStaffUpdate(event)" class="p-6 space-y-4">
-        
         <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Select Work Order (Ticket ID) *</label>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Select Work Order *</label>
           <select id="staffTicketSelect" onchange="onStaffTicketSelect()" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs font-mono text-slate-800 focus:outline-none focus:ring-2 focus:ring-teal-500">
             <option value="">-- Choose Ticket --</option>
           </select>
@@ -956,11 +1294,11 @@
         <div id="staffTicketPreview" class="hidden p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs space-y-1">
           <div class="font-bold text-slate-800" id="staffPreviewTitle">Title</div>
           <div class="text-slate-500" id="staffPreviewCategory">Category</div>
-          <div class="text-slate-500" id="staffPreviewArea">Area</div>
+          <div class="text-slate-500" id="staffPreviewArea">Locality</div>
         </div>
 
         <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">New Operational Status *</label>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Operational Status *</label>
           <div class="grid grid-cols-3 gap-2">
             <label class="flex items-center justify-center p-3 rounded-xl border border-slate-200 bg-slate-50 text-xs font-bold cursor-pointer hover:bg-slate-100 has-[:checked]:bg-amber-500 has-[:checked]:text-white has-[:checked]:border-amber-600">
               <input type="radio" name="staffStatus" value="Open" checked class="hidden"> Open
@@ -977,7 +1315,7 @@
         <div>
           <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Staff Security Passcode *</label>
           <input type="password" id="staffPassword" required placeholder="Enter passcode (default: admin123)" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-teal-500">
-          <p class="text-[10px] text-slate-400 mt-1">Default academic verification passcode: <code class="font-mono text-teal-600">admin123</code></p>
+          <p class="text-[10px] text-slate-400 mt-1">Default verification passcode: <code class="font-mono text-teal-600">admin123</code></p>
         </div>
 
         <div id="staffModalError" class="hidden text-xs text-rose-600 font-semibold p-2 bg-rose-50 rounded-lg"></div>
@@ -986,71 +1324,45 @@
           <button type="button" onclick="closeStaffModal()" class="px-4 py-2.5 text-xs font-bold text-slate-600 hover:text-slate-800">Cancel</button>
           <button type="submit" class="px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-teal-600 hover:bg-teal-700 text-white shadow">Commit Status Update</button>
         </div>
-
       </form>
 
     </div>
   </div>
 
-  <!-- Submission Response Alert Modal -->
-  <div id="alertModal" class="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 text-center border border-slate-200">
-      <div id="alertIcon" class="w-16 h-16 rounded-full flex items-center justify-center mx-auto text-3xl mb-4"></div>
-      <h3 id="alertTitle" class="text-xl font-extrabold text-slate-900 mb-2">Notice</h3>
-      <p id="alertMessage" class="text-xs text-slate-600 leading-relaxed mb-6"></p>
-      <button onclick="closeAlertModal()" class="w-full py-3 rounded-xl font-bold text-xs uppercase tracking-wider bg-slate-900 hover:bg-slate-800 text-white shadow">
-        Acknowledge & Continue
-      </button>
-    </div>
-  </div>
-
   <!-- =========================================================================
-       FOOTER
-       ========================================================================= -->
-  <footer class="bg-slate-950 text-slate-400 py-12 border-t border-slate-900 text-xs mt-auto">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
-        
-        <div class="flex items-center gap-2">
-          <span class="text-base font-extrabold text-white">Nagar<span class="text-teal-400">Mithra</span></span>
-          <span class="text-slate-600">•</span>
-          <span>Official Civic-Tech Portal for Greater Hyderabad Municipal Corporation (GHMC)</span>
-        </div>
-
-        <div class="text-slate-500">
-          Zero-Dependency Python Architecture • Academic Submission &copy; 2026
-        </div>
-
-      </div>
-    </div>
-  </footer>
-
-  <!-- =========================================================================
-       CLIENT-SIDE JAVASCRIPT ENGINE
+       CLIENT-SIDE JAVASCRIPT ENGINE WITH MANGALAGIRI BOUNDARY ENFORCEMENT
        ========================================================================= -->
   <script>
-    // State storage
     let allIssues = [];
     let map = null;
     let markersLayer = null;
+    let boundaryLayer = null;
+    let activePinMarker = null;
     let categoryChart = null;
     let statusChart = null;
     let selectedPhotoBase64 = "";
 
-    const HOTSPOTS = {
-      "Banjara Hills": { lat: 17.415600, lon: 78.435000 },
-      "Madhapur": { lat: 17.448300, lon: 78.391500 },
-      "Gachibowli": { lat: 17.440100, lon: 78.348900 },
-      "Charminar": { lat: 17.361600, lon: 78.474700 },
-      "Kukatpally": { lat: 17.494800, lon: 78.399600 }
+    // Verified Mangalagiri Localities & Coordinates
+    const MANGALAGIRI_HOTSPOTS = {
+      "Panakala Temple Area": { lat: 16.438500, lon: 80.562000 },
+      "Weavers Colony": { lat: 16.431000, lon: 80.561500 },
+      "AIIMS Mangalagiri": { lat: 16.446800, lon: 80.528500 },
+      "ACA Stadium": { lat: 16.441200, lon: 80.551000 },
+      "Railway Station / Kothapet": { lat: 16.433500, lon: 80.557000 },
+      "Chinakakani / NRI Hospital": { lat: 16.405500, lon: 80.548000 },
+      "Navuluru / Atmakur": { lat: 16.425000, lon: 80.535000 },
+      "Yerrabalem / Amaravati Bypass": { lat: 16.462000, lon: 80.543000 },
+      "Eco-Park / Reserve Forest": { lat: 16.429000, lon: 80.575000 }
     };
 
     const DEPT_INFO = {
-      "Pothole": { icon: "🕳️", name: "Roads & Traffic Infrastructure (GHMC)", sla: "48h SLA Target" },
-      "Garbage Dump": { icon: "🗑️", name: "Sanitation & Solid Waste Management", sla: "24h SLA Target" },
-      "Streetlight Fault": { icon: "💡", name: "Electricity & Public Lighting (TSSPDCL)", sla: "36h SLA Target" },
-      "Water Leakage": { icon: "🚰", name: "Water Supply & Drainage Board (HMWSSB)", sla: "24h SLA Target" },
-      "Broken Footpath": { icon: "🚶", name: "Public Works Department (PWD Walkways)", sla: "72h SLA Target" }
+      "Pothole": { icon: "🕳️", name: "MTMC Roads & Traffic Infrastructure Wing", sla: "48h SLA Target" },
+      "Garbage Dump": { icon: "🗑️", name: "MTMC Public Health & Sanitation Wing", sla: "24h SLA Target" },
+      "Streetlight Fault": { icon: "💡", name: "Electricity & Public Lighting (APCPDCL / MTMC)", sla: "36h SLA Target" },
+      "Water Leakage": { icon: "🚰", name: "MTMC Water Works & Drainage Department", sla: "24h SLA Target" },
+      "Broken Footpath": { icon: "🚶", name: "MTMC Town Planning & Walkways Wing", sla: "72h SLA Target" },
+      "Public Infrastructure": { icon: "🏛️", name: "MTMC Public Works & Civic Assets", sla: "48h SLA Target" },
+      "Other": { icon: "📋", name: "MTMC General Grievance Cell", sla: "48h SLA Target" }
     };
 
     const CATEGORY_COLORS = {
@@ -1058,8 +1370,49 @@
       "Garbage Dump": "#10b981",
       "Streetlight Fault": "#f59e0b",
       "Water Leakage": "#3b82f6",
-      "Broken Footpath": "#a855f7"
+      "Broken Footpath": "#a855f7",
+      "Public Infrastructure": "#6366f1",
+      "Other": "#64748b"
     };
+
+    // Client-side polygon vertices for fast check
+    const MANGALAGIRI_POLYGON = [
+      [16.4750, 80.5300],
+      [16.4780, 80.5500],
+      [16.4720, 80.5700],
+      [16.4550, 80.5880],
+      [16.4380, 80.5950],
+      [16.4220, 80.5900],
+      [16.4080, 80.5800],
+      [16.3980, 80.5650],
+      [16.3980, 80.5450],
+      [16.4050, 80.5280],
+      [16.4200, 80.5150],
+      [16.4450, 80.5150],
+      [16.4650, 80.5200],
+      [16.4750, 80.5300]
+    ];
+
+    function isPointInMangalagiri(lat, lon) {
+      let inside = false;
+      const n = MANGALAGIRI_POLYGON.length;
+      let p1 = MANGALAGIRI_POLYGON[0];
+      for (let i = 1; i <= n; i++) {
+        const p2 = MANGALAGIRI_POLYGON[i % n];
+        if (Math.min(p1[0], p2[0]) < lat && lat <= Math.max(p1[0], p2[0])) {
+          if (lon <= Math.max(p1[1], p2[1])) {
+            if (p1[0] !== p2[0]) {
+              const xinters = (lat - p1[0]) * (p2[1] - p1[1]) / (p2[0] - p1[0]) + p1[1];
+              if (p1[1] === p2[1] || lon <= xinters) {
+                inside = !inside;
+              }
+            }
+          }
+        }
+        p1 = p2;
+      }
+      return inside;
+    }
 
     document.addEventListener("DOMContentLoaded", () => {
       initMap();
@@ -1068,46 +1421,140 @@
       fetchSuggestions();
       updateDeptBanner();
 
-      // Mobile menu toggle
       document.getElementById("mobileMenuBtn").addEventListener("click", () => {
         document.getElementById("mobileMenu").classList.toggle("hidden");
       });
 
-      // Filter change listeners
       document.getElementById("mapFilterCategory").addEventListener("change", applyMapFilters);
       document.getElementById("mapFilterStatus").addEventListener("change", applyMapFilters);
     });
 
-    // 1. Leaflet Map Initialization
-    function initMap() {
-      map = L.map('map').setView([17.4156, 78.4350], 12);
+    // 1. Initialize Map with Mangalagiri Center and GeoJSON Boundary
+    async function initMap() {
+      // Centered on Mangalagiri center
+      map = L.map('map').setView([16.4350, 80.5580], 13);
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 18,
-        attribution: '&copy; OpenStreetMap contributors'
+        attribution: '&copy; OpenStreetMap contributors • Mangalagiri Municipal Boundary'
       }).addTo(map);
+
+      // Fetch and render the official GeoJSON boundary polygon
+      try {
+        const res = await fetch('/api/boundary');
+        const geojson = await res.json();
+        boundaryLayer = L.geoJSON(geojson, {
+          style: {
+            color: '#0f766e',
+            weight: 3,
+            dashArray: '6, 6',
+            fillColor: '#14b8a6',
+            fillOpacity: 0.12
+          }
+        }).addTo(map);
+      } catch (err) {
+        console.error("Boundary load error:", err);
+      }
 
       markersLayer = L.layerGroup().addTo(map);
 
-      // Click to pin feature
+      // Initial marker on Panakala Temple area
+      activePinMarker = L.marker([16.438500, 80.562000], { draggable: true }).addTo(map);
+      activePinMarker.on('dragend', function (e) {
+        const lat = e.target.getLatLng().lat.toFixed(6);
+        const lon = e.target.getLatLng().lng.toFixed(6);
+        handleLocationSelection(lat, lon);
+      });
+
+      // Map Click event
       map.on('click', (e) => {
         const lat = e.latlng.lat.toFixed(6);
         const lon = e.latlng.lng.toFixed(6);
-        document.getElementById('formLat').value = lat;
-        document.getElementById('formLon').value = lon;
-
-        // Show toast
-        const toast = document.getElementById('mapPinToast');
-        document.getElementById('mapPinToastText').innerText = `📍 Pinned coordinates: ${lat}, ${lon}`;
-        toast.classList.remove('hidden');
-        setTimeout(() => toast.classList.add('hidden'), 3500);
+        handleLocationSelection(lat, lon);
       });
     }
 
+    function handleLocationSelection(lat, lon) {
+      document.getElementById('formLat').value = lat;
+      document.getElementById('formLon').value = lon;
+
+      if (activePinMarker) {
+        activePinMarker.setLatLng([lat, lon]);
+      }
+
+      const isInside = isPointInMangalagiri(parseFloat(lat), parseFloat(lon));
+      const statusEl = document.getElementById('coordStatusText');
+      const submitBtn = document.getElementById('submitBtn');
+
+      if (isInside) {
+        statusEl.className = "text-xs font-semibold text-emerald-700 flex items-center gap-1.5 pt-1";
+        statusEl.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600"></i> <span>Location verified within the Mangalagiri service area.</span>`;
+        submitBtn.disabled = false;
+        submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+
+        const toast = document.getElementById('mapPinToast');
+        document.getElementById('mapPinToastText').innerText = `📍 Pinned inside Mangalagiri: ${lat}, ${lon}`;
+        toast.classList.remove('hidden');
+        setTimeout(() => toast.classList.add('hidden'), 3500);
+      } else {
+        statusEl.className = "text-xs font-semibold text-rose-600 flex items-center gap-1.5 pt-1";
+        statusEl.innerHTML = `<i class="fa-solid fa-circle-xmark text-rose-600"></i> <span>Selected point is outside Mangalagiri service area!</span>`;
+        submitBtn.disabled = true;
+        submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+
+        // Show explicit outside boundary modal
+        openOutsideBoundaryModal();
+      }
+    }
+
+    function validateFormCoordinates() {
+      const lat = parseFloat(document.getElementById('formLat').value);
+      const lon = parseFloat(document.getElementById('formLon').value);
+      if (!isNaN(lat) && !isNaN(lon)) {
+        handleLocationSelection(lat.toFixed(6), lon.toFixed(6));
+      }
+    }
+
     function resetMapView() {
-      map.setView([17.4156, 78.4350], 12);
+      map.setView([16.4350, 80.5580], 13);
       document.getElementById("mapFilterCategory").value = "All";
       document.getElementById("mapFilterStatus").value = "All";
       applyMapFilters();
+    }
+
+    function resetToMangalagiriLocation() {
+      closeOutsideBoundaryModal();
+      const coords = MANGALAGIRI_HOTSPOTS["Panakala Temple Area"];
+      document.getElementById("formArea").value = "Panakala Temple Area";
+      handleLocationSelection(coords.lat.toFixed(6), coords.lon.toFixed(6));
+      map.flyTo([coords.lat, coords.lon], 14);
+    }
+
+    function openOutsideBoundaryModal() {
+      document.getElementById("outsideBoundaryModal").classList.remove("hidden");
+    }
+
+    function closeOutsideBoundaryModal() {
+      document.getElementById("outsideBoundaryModal").classList.add("hidden");
+    }
+
+    // Geolocation API check
+    function getCurrentDeviceLocation() {
+      if (!navigator.geolocation) {
+        alert("Geolocation is not supported by your browser.");
+        return;
+      }
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const lat = pos.coords.latitude.toFixed(6);
+          const lon = pos.coords.longitude.toFixed(6);
+          handleLocationSelection(lat, lon);
+          map.flyTo([lat, lon], 14);
+        },
+        (err) => {
+          alert("Could not obtain device location. Please select your location on the Mangalagiri map.");
+        },
+        { enableHighAccuracy: true, timeout: 8000 }
+      );
     }
 
     // 2. Fetch Stats & Render Charts
@@ -1128,7 +1575,6 @@
     }
 
     function renderCharts(catCounts, statusCounts) {
-      // Category Bar Chart
       const catCtx = document.getElementById('categoryChart').getContext('2d');
       const catLabels = Object.keys(catCounts);
       const catValues = Object.values(catCounts);
@@ -1140,7 +1586,7 @@
         data: {
           labels: catLabels,
           datasets: [{
-            label: 'Active Work Orders',
+            label: 'Mangalagiri Work Orders',
             data: catValues,
             backgroundColor: catColors,
             borderRadius: 8
@@ -1157,7 +1603,6 @@
         }
       });
 
-      // Status Donut Chart
       const statusCtx = document.getElementById('statusChart').getContext('2d');
       const statusLabels = ['Open', 'In Progress', 'Resolved'];
       const statusValues = statusLabels.map(s => statusCounts[s] || 0);
@@ -1169,7 +1614,7 @@
           labels: statusLabels,
           datasets: [{
             data: statusValues,
-            backgroundColor: ['#f97316', '#0284c7', '#10b981'],
+            backgroundColor: ['#f59e0b', '#0284c7', '#10b981'],
             borderWidth: 2,
             borderColor: '#ffffff'
           }]
@@ -1222,7 +1667,7 @@
         const slaIndicator = issue.sla_breached ? `<span class="text-rose-600 font-bold">⚠️ Overdue</span>` : `<span class="text-emerald-600">Within SLA</span>`;
 
         const popupContent = `
-          <div class="text-xs p-1 space-y-1 font-sans" style="min-width: 180px;">
+          <div class="text-xs p-1 space-y-1 font-sans" style="min-width: 190px;">
             <div class="flex items-center justify-between font-bold">
               <span class="font-mono text-teal-700">${issue.ticket_id}</span>
               <span class="px-1.5 py-0.5 rounded ${statusClass}">${issue.status}</span>
@@ -1275,7 +1720,20 @@
       }).join('');
     }
 
-    // 4. Form Actions & Department Banner
+    // 4. Form Actions & Locality Handling
+    function onCategoryChange() {
+      updateDeptBanner();
+      const cat = document.getElementById("formCategory").value;
+      const otherContainer = document.getElementById("otherDescriptionContainer");
+      if (cat === "Other") {
+        otherContainer.classList.remove("hidden");
+        document.getElementById("formOtherDetail").required = true;
+      } else {
+        otherContainer.classList.add("hidden");
+        document.getElementById("formOtherDetail").required = false;
+      }
+    }
+
     function updateDeptBanner() {
       const cat = document.getElementById("formCategory").value;
       const info = DEPT_INFO[cat] || DEPT_INFO["Pothole"];
@@ -1284,13 +1742,12 @@
       document.getElementById("deptBannerSla").innerText = info.sla;
     }
 
-    function onAreaSelect() {
+    function onLocalitySelect() {
       const area = document.getElementById("formArea").value;
-      const coords = HOTSPOTS[area];
+      const coords = MANGALAGIRI_HOTSPOTS[area];
       if (coords) {
-        document.getElementById("formLat").value = coords.lat.toFixed(6);
-        document.getElementById("formLon").value = coords.lon.toFixed(6);
-        if (map) map.flyTo([coords.lat, coords.lon], 13);
+        handleLocationSelection(coords.lat.toFixed(6), coords.lon.toFixed(6));
+        if (map) map.flyTo([coords.lat, coords.lon], 14);
       }
     }
 
@@ -1308,7 +1765,6 @@
       badge.innerText = labels[v].text;
     }
 
-    // Photo input handler
     function handleFileSelect(e) {
       const file = e.target.files[0];
       if (!file) return;
@@ -1331,23 +1787,38 @@
       document.getElementById('uploadPreviewContainer').classList.add('hidden');
     }
 
-    // Report Submit
+    // Report Submission with Boundary Enforcement
     async function handleReportSubmit(e) {
       e.preventDefault();
+      const lat = parseFloat(document.getElementById("formLat").value);
+      const lon = parseFloat(document.getElementById("formLon").value);
+
+      // FRONTEND BOUNDARY CHECK
+      if (!isPointInMangalagiri(lat, lon)) {
+        openOutsideBoundaryModal();
+        return;
+      }
+
       const btn = document.getElementById("submitBtn");
       btn.disabled = true;
-      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Processing Spatial Duplicates...`;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Verifying Boundary & Spatial Duplicates...`;
+
+      let finalDescription = document.getElementById("formDescription").value.trim();
+      if (document.getElementById("formCategory").value === "Other") {
+        const otherDetail = document.getElementById("formOtherDetail").value.trim();
+        finalDescription = `[Other Details: ${otherDetail}] ${finalDescription}`;
+      }
 
       const payload = {
         category: document.getElementById("formCategory").value,
         title: document.getElementById("formTitle").value,
-        description: document.getElementById("formDescription").value,
+        description: finalDescription,
         severity: parseInt(document.getElementById("formSeverity").value),
         area: document.getElementById("formArea").value,
-        latitude: parseFloat(document.getElementById("formLat").value),
-        longitude: parseFloat(document.getElementById("formLon").value),
+        latitude: lat,
+        longitude: lon,
         photo_data: selectedPhotoBase64,
-        photo_name: "evidence"
+        photo_name: "mangalagiri_proof"
       };
 
       try {
@@ -1374,26 +1845,33 @@
               "fa-solid fa-circle-check text-emerald-500 bg-emerald-50"
             );
           }
-          // Reset form
+          // Reset fields while keeping valid Mangalagiri coordinates
           document.getElementById("formTitle").value = "";
           document.getElementById("formDescription").value = "";
+          if (document.getElementById("formOtherDetail")) {
+            document.getElementById("formOtherDetail").value = "";
+          }
           clearPhoto();
-          // Refresh data
           fetchStats();
           fetchIssues();
           setTrackId(data.ticket_id);
         } else {
-          alert(data.error || "Submission failed");
+          // If server rejects boundary or inputs
+          if (data.error === "Location Outside Mangalagiri") {
+            openOutsideBoundaryModal();
+          } else {
+            alert(data.error || data.message || "Submission failed");
+          }
         }
       } catch (err) {
-        alert("Network error submitting report");
+        alert("Network error communicating with Mangalagiri server");
       } finally {
         btn.disabled = false;
-        btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Submit Civic Grievance`;
+        btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Submit Civic Grievance to Mangalagiri Municipal Corp`;
       }
     }
 
-    // 5. Ticket Tracking & Upvoting
+    // 5. Tracking & Community Upvoting
     function setTrackId(ticketId) {
       document.getElementById("trackSearchInput").value = ticketId;
       searchTicket();
@@ -1441,7 +1919,6 @@
       document.getElementById("ticketPriorityFormulaBreakdown").innerText = 
         `Severity (${t.severity}×10) + Reports (${t.report_count}×5) + Upvotes (${t.upvotes}×2) = ${t.priority_score} pts`;
 
-      // SLA Badge
       const slaBadge = document.getElementById("ticketSlaBadge");
       if (t.sla_breached) {
         slaBadge.className = "px-3 py-1 text-xs font-bold rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/40 animate-pulse";
@@ -1476,7 +1953,6 @@
         s4.innerHTML = '4';
       }
 
-      // Image
       const imgContainer = document.getElementById("ticketImageContainer");
       if (t.photo_path) {
         document.getElementById("ticketImage").src = t.photo_path;
@@ -1520,7 +1996,7 @@
           <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
             <div class="space-y-2">
               <div class="flex items-center gap-2 text-amber-500 text-xs font-bold uppercase tracking-wider">
-                <i class="fa-solid fa-lightbulb"></i> Civic Proposal
+                <i class="fa-solid fa-lightbulb"></i> Mangalagiri Proposal
               </div>
               <h4 class="text-base font-bold text-slate-900">${item.title}</h4>
               <p class="text-xs text-slate-600 leading-relaxed">${item.description}</p>
@@ -1556,7 +2032,7 @@
           document.getElementById("ideaAuthor").value = "";
           document.getElementById("ideaFormContainer").classList.add("hidden");
           fetchSuggestions();
-          alert("Thank you! Your proposal has been posted to the civic wall.");
+          alert("Thank you! Your proposal has been posted to the Mangalagiri civic wall.");
         }
       } catch (err) {
         alert("Failed to submit proposal");
@@ -1587,10 +2063,9 @@
       if (issue) {
         document.getElementById("staffPreviewTitle").innerText = issue.title;
         document.getElementById("staffPreviewCategory").innerText = `Category: ${issue.category} • Priority: ${issue.priority_score} (${issue.priority_level})`;
-        document.getElementById("staffPreviewArea").innerText = `Zone: ${issue.area} • Current Status: ${issue.status}`;
+        document.getElementById("staffPreviewArea").innerText = `Locality: ${issue.area} • Current Status: ${issue.status}`;
         preview.classList.remove("hidden");
         
-        // Select matching radio
         const radios = document.getElementsByName("staffStatus");
         radios.forEach(r => { if (r.value === issue.status) r.checked = true; });
       } else {
@@ -1635,7 +2110,6 @@
       }
     }
 
-    // Alert Modal
     function showAlertModal(title, msg, color, iconClass) {
       document.getElementById("alertTitle").innerText = title;
       document.getElementById("alertMessage").innerText = msg;
@@ -1649,7 +2123,6 @@
       document.getElementById("alertModal").classList.add("hidden");
     }
 
-    // Accordion FAQ Toggle
     function toggleFaq(num) {
       const ans = document.getElementById(`faqAnswer${num}`);
       const icon = document.getElementById(`faqIcon${num}`);
