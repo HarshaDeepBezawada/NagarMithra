@@ -22,41 +22,41 @@ from boundary import (
 # Earth radius in metres for the Haversine formula
 EARTH_RADIUS_METRES = 6371000.0
 
-# 2.1 Automated Department Routing & SLA Deadlines (Mangalagiri Municipal Corporation - MTMC)
+# 2.1 Automated Department Routing & SLA Deadlines (Mangalagiri Civic Redressal)
 DEPARTMENT_ROUTING = {
     "Pothole": {
         "icon": "🕳️",
-        "department": "MTMC Roads & Traffic Infrastructure Wing",
+        "department": "Roads & Traffic Infrastructure Team",
         "sla_hours": 48
     },
     "Garbage Dump": {
         "icon": "🗑️",
-        "department": "MTMC Public Health & Sanitation Wing",
+        "department": "Public Health & Sanitation Team",
         "sla_hours": 24
     },
     "Streetlight Fault": {
         "icon": "💡",
-        "department": "Electricity & Public Lighting (APCPDCL / MTMC)",
+        "department": "Electricity & Public Lighting Team",
         "sla_hours": 36
     },
     "Water Leakage": {
         "icon": "🚰",
-        "department": "MTMC Water Works & Drainage Department",
+        "department": "Water Works & Drainage Network",
         "sla_hours": 24
     },
     "Broken Footpath": {
         "icon": "🚶",
-        "department": "MTMC Town Planning & Walkways Wing",
+        "department": "Town Planning & Walkways Team",
         "sla_hours": 72
     },
     "Public Infrastructure": {
         "icon": "🏛️",
-        "department": "MTMC Public Works & Civic Assets",
+        "department": "Civic Works & Public Assets",
         "sla_hours": 48
     },
     "Other": {
         "icon": "📋",
-        "department": "MTMC General Grievance Cell",
+        "department": "General Civic Response Team",
         "sla_hours": 48
     }
 }

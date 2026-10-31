@@ -64,11 +64,101 @@ def init_db(db_path: str = DB_PATH) -> None:
             )
         """)
 
+        # Users table for Citizen & Staff authentication
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                phone TEXT UNIQUE NOT NULL,
+                password TEXT NOT NULL,
+                role TEXT NOT NULL DEFAULT 'citizen',
+                created_at TEXT NOT NULL
+            )
+        """)
+
+        # Ensure citizen_phone column exists on issues
+        try:
+            cursor.execute("ALTER TABLE issues ADD COLUMN citizen_phone TEXT")
+        except Exception:
+            pass
+
+        # Seed default staff and citizen accounts if empty
+        cursor.execute("SELECT COUNT(*) FROM users")
+        if cursor.fetchone()[0] == 0:
+            now_iso = datetime.now(timezone.utc).isoformat()
+            cursor.execute("""
+                INSERT INTO users (name, phone, password, role, created_at)
+                VALUES 
+                ('Staff Coordinator', '9999999999', 'admin123', 'staff', ?),
+                ('Ramesh Kumar', '9876543210', 'citizen123', 'citizen', ?)
+            """, (now_iso, now_iso))
+
         # Indexes for fast lookup
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_issues_ticket_id ON issues (ticket_id)")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_issues_status ON issues (status)")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_issues_category ON issues (category)")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_users_phone ON users (phone)")
         conn.commit()
+
+
+def create_user(name: str, phone: str, password: str, role: str = "citizen", db_path: str = DB_PATH) -> dict | None:
+    """Create a new citizen or staff account."""
+    clean_phone = phone.strip()
+    with get_connection(db_path) as conn:
+        cursor = conn.cursor()
+        try:
+            now_iso = datetime.now(timezone.utc).isoformat()
+            cursor.execute("""
+                INSERT INTO users (name, phone, password, role, created_at)
+                VALUES (?, ?, ?, ?, ?)
+            """, (name.strip(), clean_phone, password.strip(), role.strip(), now_iso))
+            conn.commit()
+            return get_user_by_phone(clean_phone, db_path=db_path)
+        except Exception:
+            return None
+
+
+def get_user_by_phone(phone: str, db_path: str = DB_PATH) -> dict | None:
+    """Lookup user by phone number without exposing password."""
+    clean_phone = phone.strip()
+    with get_connection(db_path) as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT id, name, phone, role, created_at FROM users WHERE phone = ?", (clean_phone,))
+        row = cursor.fetchone()
+        return dict(row) if row else None
+
+
+def authenticate_user(phone: str, password: str, db_path: str = DB_PATH) -> dict | None:
+    """Verify phone and password credentials."""
+    clean_phone = phone.strip()
+    with get_connection(db_path) as conn:
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT id, name, phone, role, created_at 
+            FROM users 
+            WHERE phone = ? AND password = ?
+        """, (clean_phone, password.strip()))
+        row = cursor.fetchone()
+        return dict(row) if row else None
+
+
+def get_issues_by_citizen(phone: str, db_path: str = DB_PATH) -> list[dict]:
+    """Retrieve all tickets submitted by a specific citizen phone."""
+    clean_phone = phone.strip()
+    with get_connection(db_path) as conn:
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT * FROM issues 
+            WHERE citizen_phone = ? 
+            ORDER BY id DESC
+        """, (clean_phone,))
+        rows = cursor.fetchall()
+        result = []
+        for r in rows:
+            d = dict(r)
+            d["sla_breached"] = is_sla_breached(d["created_at"], d["sla_hours"], d["status"])
+            result.append(d)
+        return result
 
 
 def find_duplicate_candidate(category: str, lat: float, lon: float, threshold_m: float = 100.0, db_path: str = DB_PATH):
@@ -130,7 +220,7 @@ def insert_issue(ticket_id: str, category: str, title: str, description: str,
                  severity: int, area: str, latitude: float, longitude: float,
                  photo_path: str = "", status: str = "Open",
                  upvotes: int = 0, report_count: int = 1,
-                 created_at: str = None, db_path: str = DB_PATH) -> dict:
+                 created_at: str = None, citizen_phone: str = "", db_path: str = DB_PATH) -> dict:
     """
     Insert a brand new civic issue into the database.
     Computes department routing, priority score, and SLA hours.
@@ -151,13 +241,13 @@ def insert_issue(ticket_id: str, category: str, title: str, description: str,
                 ticket_id, category, department, title, description,
                 severity, area, latitude, longitude, photo_path,
                 status, report_count, upvotes, priority_score, priority_level,
-                created_at, sla_hours
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                created_at, sla_hours, citizen_phone
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
             ticket_id, category, department, title, description,
             int(severity), area, float(latitude), float(longitude), photo_path,
             status, int(report_count), int(upvotes), int(priority_score), priority_level,
-            created_at, int(sla_hours)
+            created_at, int(sla_hours), citizen_phone
         ))
         conn.commit()
 
@@ -192,7 +282,7 @@ def get_all_issues(status: str = None, category: str = None, db_path: str = DB_P
             query += " AND category = ?"
             params.append(category)
 
-        query += " ORDER BY priority_score DESC, id DESC"
+        query += " ORDER BY id DESC"
         cursor.execute(query, params)
         rows = cursor.fetchall()
 
