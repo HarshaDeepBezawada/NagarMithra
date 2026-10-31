@@ -113,32 +113,20 @@ The website footer is built directly upon the supplied panoramic sketch artwork:
 
 ---
 
-## 5. Launchers & Operational Commands
+## 5. Live Deployment
 
-### 1. Launch Full Web Portal (Recommended)
-Double click `run_website.bat` OR run:
-```cmd
-python server.py
-```
-> **Serves at:** [http://localhost:5000](http://localhost:5000)
+**NagarMitra – Mangalagiri Civic Issue Reporting Platform**
 
-### 2. Launch Streamlit Dashboard (Alternative)
-Double click `run_streamlit.bat` OR run:
-```cmd
-streamlit run app.py
-```
-> **Serves at:** [http://localhost:8501](http://localhost:8501)
+Access the live application here:
 
-### 3. Execute Test Suite
-Double click `run_tests.bat` OR run:
-```cmd
-pytest test_logic.py -v
-```
+**[Visit NagarMitra](YOUR_DEPLOYED_LINK_HERE)**
 
-### 4. Re-seed Sample Data (100 Mangalagiri Records)
-```cmd
-python seed.py
-```
+The platform enables citizens to report civic issues within the Mangalagiri municipal area, track complaints, and view municipal grievance information.
+
+The application is designed to improve civic engagement, transparency, and community development in Mangalagiri.
+
+---
+
 
 ### Staff Console Passcode
 - **Passcode:** `admin123`
